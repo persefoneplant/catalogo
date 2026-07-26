@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Persefoneplantas · Catálogo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde-fondo: #1F2E1A;
+    --verde-oscuro: #16210F;
+    --papel: #FAF8F2;
+    --terracota: #B9552C;
+    --oro: #C89B3C;
+    --texto: #2B2B24;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--papel);
+    color: var(--texto);
+    font-family: 'Inter', sans-serif;
+  }
+  header {
+    background: var(--verde-fondo);
+    color: var(--papel);
+    padding: 64px 24px 48px;
+    text-align: center;
+  }
+  header h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    margin: 0 0 8px;
+  }
+  header p {
+    opacity: 0.75;
+    margin: 0;
+    font-size: 1rem;
+  }
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 28px;
+  }
+  .tarjeta {
+    background: white;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.15s ease;
+  }
+  .tarjeta:hover { transform: translateY(-3px); }
+  .foto-wrap {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background: #EDEAE0;
+  }
+  .foto-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .etiqueta-tallo {
+    position: absolute;
+    top: -6px;
+    left: 16px;
+    width: 3px;
+    height: 20px;
+    background: var(--verde-fondo);
+  }
+  .info { padding: 16px 18px 20px; flex: 1; display: flex; flex-direction: column; }
+  .info h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin: 0 0 6px;
+    line-height: 1.25;
+  }
+  .desc {
+    font-size: 0.85rem;
+    color: #6b6a5e;
+    margin: 0 0 14px;
+    line-height: 1.4;
+    flex: 1;
+  }
+  .precio-linea { margin-bottom: 12px; font-family: 'Fraunces', serif; }
+  .precio { font-size: 1.15rem; font-weight: 600; color: var(--verde-fondo); }
+  .precio-tachado { text-decoration: line-through; opacity: 0.5; font-size: 0.95rem; }
+  .precio-oferta { font-size: 1.15rem; font-weight: 700; color: var(--terracota); margin-left: 6px; }
+  .boton-wa {
+    display: inline-block;
+    text-align: center;
+    background: var(--terracota);
+    color: white;
+    text-decoration: none;
+    padding: 10px 14px;
+    border-radius: 3px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  .boton-wa:hover { background: #9c451f; }
+  footer {
+    text-align: center;
+    padding: 32px 20px 48px;
+    color: #8a8878;
+    font-size: 0.8rem;
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Persefoneplantas</h1>
+    <p>Plantas de interior y exterior · Rosario y alrededores</p>
+  </header>
+  <main>
+    
+    <article class="tarjeta">
+      <div class="foto-wrap">
+        <img src="https://i.ibb.co/YT0xgR5h/6903f5b3aebe.jpg" alt="Begonia maculata" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="info">
+        <h3>Begonia maculata</h3>
+        <p class="desc">🌿 Planta exótica – decorativa – begonia
+
+☀️ Luz: Hojas moteadas, muy vistosa.
+💧 Riego moderado. No mojar las hojas al regar, para evitar hon</p>
+        <div class="precio-linea"><span class="precio-tachado">25000 ARS</span> <span class="precio-oferta">nan</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Begonia%20maculata%20%28c%C3%B3digo%20BEG-N21-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta">
+      <div class="foto-wrap">
+        <img src="https://i.ibb.co/39m6gVKC/13b90c26006c.jpg" alt="Neomarica gracilis / Lirio caminante" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="info">
+        <h3>Neomarica gracilis / Lirio caminante</h3>
+        <p class="desc">🌿 
+
+☀️ Luz: Follaje elegante, flores delicadas.
+💧 Riego moderado. Prefiere tierra apenas húmeda, sin encharcar
+📏 Tamaño de maceta: Chico - N</p>
+        <div class="precio-linea"><span class="precio-tachado">7000 ARS</span> <span class="precio-oferta">nan</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Neomarica%20gracilis%20/%20Lirio%20caminante%20%28c%C3%B3digo%20NEOG-N14-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta">
+      <div class="foto-wrap">
+        <img src="https://i.ibb.co/PswvVCDs/596920fcab54.jpg" alt="Planta del dinero / Plectranthus verticillatus" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="info">
+        <h3>Planta del dinero / Plectranthus verticillatus</h3>
+        <p class="desc">🌿 
+
+☀️ Luz: Crecimiento rápido, planta colgante.
+💧 Riego moderado. Riego regular, sin encharcar
+📏 Tamaño de maceta: Medio - N18 
+
+📍 Rosario </p>
+        <div class="precio-linea"><span class="precio-tachado">17000 ARS</span> <span class="precio-oferta">nan</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Planta%20del%20dinero%20/%20Plectranthus%20verticillatus%20%28c%C3%B3digo%20PLECV-N18-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </article>
+    
+  </main>
+  <footer>
+    Tocá "Consultar por WhatsApp" en cualquier planta para preguntar por precio, stock o coordinar la entrega.
+  </footer>
+</body>
+</html>
