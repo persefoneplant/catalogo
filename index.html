@@ -76,6 +76,48 @@
     height: 20px;
     background: var(--verde-fondo);
   }
+  .miniaturas {
+    display: flex;
+    gap: 6px;
+    padding: 10px 18px 0;
+  }
+  .mini {
+    width: 34px;
+    height: 34px;
+    border-radius: 3px;
+    border: 2px solid transparent;
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    padding: 0;
+  }
+  .mini:hover { border-color: var(--terracota); }
+  .filtros {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 20px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+  .filtro {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid #d8d5c8;
+    background: white;
+    color: var(--texto);
+    cursor: pointer;
+  }
+  .filtro.activo {
+    background: var(--verde-fondo);
+    border-color: var(--verde-fondo);
+    color: white;
+  }
+  .tarjeta.oculta { display: none; }
   .info { padding: 16px 18px 20px; flex: 1; display: flex; flex-direction: column; }
   .info h3 {
     font-family: 'Fraunces', serif;
@@ -121,30 +163,35 @@
     <h1>Persefoneplantas</h1>
     <p>Plantas de interior y exterior · Rosario y alrededores</p>
   </header>
+  <nav class="filtros">
+    <button class="filtro activo" data-filtro="todas">Todas</button><button class="filtro" data-filtro="C">Interior · mucha luz</button><button class="filtro" data-filtro="D">Interior · algo de sol</button>
+  </nav>
   <main>
     
-    <article class="tarjeta">
+    <article class="tarjeta" data-categorias="C">
       <div class="foto-wrap">
-        <img src="https://i.ibb.co/YT0xgR5h/6903f5b3aebe.jpg" alt="Begonia maculata" loading="lazy">
+        <img id="foto-BEG-N21-01" src="https://i.ibb.co/YT0xgR5h/6903f5b3aebe.jpg" alt="Begonia maculata" loading="lazy">
         <span class="etiqueta-tallo"></span>
       </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/YT0xgR5h/6903f5b3aebe.jpg')" onclick="cambiarFoto(this,'BEG-N21-01','https://i.ibb.co/YT0xgR5h/6903f5b3aebe.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/hFFP2Tn0/d9e62bcd4937.jpg')" onclick="cambiarFoto(this,'BEG-N21-01','https://i.ibb.co/hFFP2Tn0/d9e62bcd4937.jpg')"></button></div>
       <div class="info">
         <h3>Begonia maculata</h3>
         <p class="desc">🌿 Planta exótica – decorativa – begonia
 
 ☀️ Luz: Hojas moteadas, muy vistosa.
 💧 Riego moderado. No mojar las hojas al regar, para evitar hon</p>
-        <div class="precio-linea"><span class="precio-tachado">25000 ARS</span> <span class="precio-oferta">nan</span></div>
+        <div class="precio-linea"><span class="precio">25000 ARS</span></div>
         <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Begonia%20maculata%20%28c%C3%B3digo%20BEG-N21-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
       </div>
     </article>
     
 
-    <article class="tarjeta">
+    <article class="tarjeta" data-categorias="C D">
       <div class="foto-wrap">
-        <img src="https://i.ibb.co/39m6gVKC/13b90c26006c.jpg" alt="Neomarica gracilis / Lirio caminante" loading="lazy">
+        <img id="foto-NEOG-N14-01" src="https://i.ibb.co/39m6gVKC/13b90c26006c.jpg" alt="Neomarica gracilis / Lirio caminante" loading="lazy">
         <span class="etiqueta-tallo"></span>
       </div>
+      
       <div class="info">
         <h3>Neomarica gracilis / Lirio caminante</h3>
         <p class="desc">🌿 
@@ -152,17 +199,18 @@
 ☀️ Luz: Follaje elegante, flores delicadas.
 💧 Riego moderado. Prefiere tierra apenas húmeda, sin encharcar
 📏 Tamaño de maceta: Chico - N</p>
-        <div class="precio-linea"><span class="precio-tachado">7000 ARS</span> <span class="precio-oferta">nan</span></div>
+        <div class="precio-linea"><span class="precio">7000 ARS</span></div>
         <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Neomarica%20gracilis%20/%20Lirio%20caminante%20%28c%C3%B3digo%20NEOG-N14-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
       </div>
     </article>
     
 
-    <article class="tarjeta">
+    <article class="tarjeta" data-categorias="C D">
       <div class="foto-wrap">
-        <img src="https://i.ibb.co/PswvVCDs/596920fcab54.jpg" alt="Planta del dinero / Plectranthus verticillatus" loading="lazy">
+        <img id="foto-PLECV-N18-01" src="https://i.ibb.co/PswvVCDs/596920fcab54.jpg" alt="Planta del dinero / Plectranthus verticillatus" loading="lazy">
         <span class="etiqueta-tallo"></span>
       </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/PswvVCDs/596920fcab54.jpg')" onclick="cambiarFoto(this,'PLECV-N18-01','https://i.ibb.co/PswvVCDs/596920fcab54.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/kVCvvP6p/26fe4a072233.jpg')" onclick="cambiarFoto(this,'PLECV-N18-01','https://i.ibb.co/kVCvvP6p/26fe4a072233.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/Hwn5XKG/bbe4e495bd3f.jpg')" onclick="cambiarFoto(this,'PLECV-N18-01','https://i.ibb.co/Hwn5XKG/bbe4e495bd3f.jpg')"></button></div>
       <div class="info">
         <h3>Planta del dinero / Plectranthus verticillatus</h3>
         <p class="desc">🌿 
@@ -172,7 +220,7 @@
 📏 Tamaño de maceta: Medio - N18 
 
 📍 Rosario </p>
-        <div class="precio-linea"><span class="precio-tachado">17000 ARS</span> <span class="precio-oferta">nan</span></div>
+        <div class="precio-linea"><span class="precio">17000 ARS</span></div>
         <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Planta%20del%20dinero%20/%20Plectranthus%20verticillatus%20%28c%C3%B3digo%20PLECV-N18-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
       </div>
     </article>
@@ -181,5 +229,24 @@
   <footer>
     Tocá "Consultar por WhatsApp" en cualquier planta para preguntar por precio, stock o coordinar la entrega.
   </footer>
+  <script>
+    function cambiarFoto(boton, idGaleria, url) {
+      document.getElementById('foto-' + idGaleria).src = url;
+    }
+
+    document.querySelectorAll('.filtro').forEach(function(boton) {
+      boton.addEventListener('click', function() {
+        document.querySelectorAll('.filtro').forEach(b => b.classList.remove('activo'));
+        boton.classList.add('activo');
+        var filtro = boton.getAttribute('data-filtro');
+
+        document.querySelectorAll('.tarjeta').forEach(function(tarjeta) {
+          var categorias = (tarjeta.getAttribute('data-categorias') || '').split(' ');
+          var mostrar = (filtro === 'todas') || categorias.includes(filtro);
+          tarjeta.classList.toggle('oculta', !mostrar);
+        });
+      });
+    });
+  </script>
 </body>
 </html>
