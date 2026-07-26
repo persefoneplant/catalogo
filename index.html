@@ -18,7 +18,7 @@
     --texto: #EDEAE0;
     --texto-suave: #A9A594;
     --texto-tarjeta: #2B2B24;
-    --fondo-tarjeta: #F1EEE3;
+    --fondo-tarjeta: #E8E0C9;
   }
   * { box-sizing: border-box; }
   body {
@@ -94,9 +94,9 @@
     flex-wrap: wrap;
   }
   .mini {
-    width: 34px;
-    height: 34px;
-    border-radius: 3px;
+    width: 46px;
+    height: 46px;
+    border-radius: 4px;
     border: 2px solid transparent;
     background-size: cover;
     background-position: center;
@@ -273,6 +273,32 @@
   }
   .modal-precio { font-family: 'Fraunces', serif; margin-bottom: 16px; }
 
+  .modal-foto-grande img { cursor: zoom-in; }
+
+  .imagen-full-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.94);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1500;
+    padding: 24px;
+  }
+  .imagen-full-overlay.abierta { display: flex; }
+  .imagen-full-overlay img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    cursor: default;
+  }
+  .imagen-full-cerrar {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 14px);
+    right: 14px;
+    z-index: 1501;
+  }
+
   @media (max-width: 700px) {
     .modal-overlay { padding: 0; }
     .modal-caja { grid-template-columns: 1fr; max-height: 100vh; max-width: 100vw; border-radius: 0; }
@@ -350,7 +376,7 @@
     <div class="modal-caja">
       <button class="modal-cerrar" onclick="cerrarModal()">✕</button>
       <div class="modal-foto-grande">
-        <img id="modalImg" src="" alt="">
+        <img id="modalImg" src="" alt="" onclick="abrirImagenCompleta()">
         <button class="modal-nav prev" id="modalPrev" onclick="modalAnterior()">‹</button>
         <button class="modal-nav next" id="modalNext" onclick="modalSiguiente()">›</button>
       </div>
@@ -362,6 +388,11 @@
         <a class="boton-wa" id="modalWa" href="#" target="_blank" rel="noopener">Consultar por WhatsApp</a>
       </div>
     </div>
+  </div>
+
+  <div class="imagen-full-overlay" id="imagenFullOverlay">
+    <button class="modal-cerrar imagen-full-cerrar" onclick="cerrarImagenCompleta()">✕</button>
+    <img id="imagenFullImg" src="" alt="">
   </div>
 
   <script>
@@ -427,11 +458,29 @@
       renderModal();
     }
 
+    function abrirImagenCompleta() {
+      document.getElementById('imagenFullImg').src = document.getElementById('modalImg').src;
+      document.getElementById('imagenFullOverlay').classList.add('abierta');
+    }
+
+    function cerrarImagenCompleta() {
+      document.getElementById('imagenFullOverlay').classList.remove('abierta');
+    }
+
+    document.getElementById('imagenFullOverlay').addEventListener('click', function(e) {
+      if (e.target === this) cerrarImagenCompleta();
+    });
+
     document.getElementById('modalOverlay').addEventListener('click', function(e) {
       if (e.target === this) cerrarModal();
     });
 
     document.addEventListener('keydown', function(e) {
+      const imagenAbierta = document.getElementById('imagenFullOverlay').classList.contains('abierta');
+      if (imagenAbierta) {
+        if (e.key === 'Escape') cerrarImagenCompleta();
+        return;
+      }
       if (!document.getElementById('modalOverlay').classList.contains('abierto')) return;
       if (e.key === 'Escape') cerrarModal();
       if (e.key === 'ArrowRight') modalSiguiente();
