@@ -8,34 +8,42 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --verde-fondo: #1F2E1A;
-    --verde-oscuro: #16210F;
-    --papel: #FAF8F2;
-    --terracota: #B9552C;
+    --negro: #0B0B09;
+    --verde-header: #16220F;
+    --verde-planta: #8FD17F;
+    --verde-precio: #2F6B3B;
+    --papel: #0B0B09;
+    --terracota: #C96A3C;
     --oro: #C89B3C;
-    --texto: #2B2B24;
+    --texto: #EDEAE0;
+    --texto-suave: #A9A594;
+    --texto-tarjeta: #2B2B24;
   }
   * { box-sizing: border-box; }
   body {
     margin: 0;
-    background: var(--papel);
+    background-color: var(--negro);
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='none' stroke='%233B7A3F' stroke-width='1.1' opacity='0.16'%3E%3Cpath d='M20 100 C20 70 40 55 55 40 C60 60 55 85 20 100Z'/%3E%3Cpath d='M55 40 C55 40 40 55 20 100' /%3E%3Cpath d='M110 30 C110 55 95 68 80 78 C78 60 82 40 110 30Z'/%3E%3Cpath d='M80 78 C80 78 95 68 110 30'/%3E%3C/g%3E%3C/svg%3E");
+    background-repeat: repeat;
     color: var(--texto);
     font-family: 'Inter', sans-serif;
   }
   header {
-    background: var(--verde-fondo);
-    color: var(--papel);
-    padding: 64px 24px 48px;
+    background: var(--verde-header);
+    padding: 56px 24px 40px;
     text-align: center;
+    border-bottom: 1px solid #2a3520;
   }
   header h1 {
     font-family: 'Fraunces', serif;
-    font-weight: 600;
+    font-weight: 700;
     font-size: clamp(2.2rem, 5vw, 3.2rem);
     margin: 0 0 8px;
+    color: var(--verde-planta);
   }
   header p {
-    opacity: 0.75;
+    color: var(--texto-suave);
     margin: 0;
     font-size: 1rem;
   }
@@ -49,9 +57,10 @@
   }
   .tarjeta {
     background: white;
+    color: var(--texto-tarjeta);
     border-radius: 4px;
     overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.35);
     display: flex;
     flex-direction: column;
     transition: transform 0.15s ease;
@@ -61,6 +70,7 @@
     position: relative;
     aspect-ratio: 1 / 1;
     background: #EDEAE0;
+    cursor: pointer;
   }
   .foto-wrap img {
     width: 100%;
@@ -74,12 +84,13 @@
     left: 16px;
     width: 3px;
     height: 20px;
-    background: var(--verde-fondo);
+    background: var(--verde-planta);
   }
   .miniaturas {
     display: flex;
     gap: 6px;
     padding: 10px 18px 0;
+    flex-wrap: wrap;
   }
   .mini {
     width: 34px;
@@ -109,13 +120,13 @@
     border-radius: 20px;
     border: 1px solid #d8d5c8;
     background: white;
-    color: var(--texto);
+    color: var(--texto-tarjeta);
     cursor: pointer;
   }
   .filtro.activo {
-    background: var(--verde-fondo);
-    border-color: var(--verde-fondo);
-    color: white;
+    background: var(--verde-planta);
+    border-color: var(--verde-planta);
+    color: var(--negro);
   }
   .tarjeta.oculta { display: none; }
   .info { padding: 16px 18px 20px; flex: 1; display: flex; flex-direction: column; }
@@ -125,6 +136,7 @@
     font-size: 1.05rem;
     margin: 0 0 6px;
     line-height: 1.25;
+    cursor: pointer;
   }
   .desc {
     font-size: 0.85rem;
@@ -133,8 +145,18 @@
     line-height: 1.4;
     flex: 1;
   }
+  .ver-mas {
+    background: none;
+    border: none;
+    color: var(--terracota);
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+  }
   .precio-linea { margin-bottom: 12px; font-family: 'Fraunces', serif; }
-  .precio { font-size: 1.15rem; font-weight: 600; color: var(--verde-fondo); }
+  .precio { font-size: 1.15rem; font-weight: 600; color: var(--verde-precio); }
   .precio-tachado { text-decoration: line-through; opacity: 0.5; font-size: 0.95rem; }
   .precio-oferta { font-size: 1.15rem; font-weight: 700; color: var(--terracota); margin-left: 6px; }
   .boton-wa {
@@ -153,9 +175,107 @@
   footer {
     text-align: center;
     padding: 32px 20px 48px;
-    color: #8a8878;
+    color: var(--texto-suave);
     font-size: 0.8rem;
   }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+  }
+  .modal-overlay.abierto { display: flex; }
+  .modal-caja {
+    background: white;
+    color: var(--texto-tarjeta);
+    max-width: min(1400px, 94vw);
+    width: 100%;
+    max-height: 92vh;
+    overflow-y: auto;
+    border-radius: 6px;
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    position: relative;
+  }
+  @media (max-width: 700px) {
+    .modal-overlay { padding: 0; }
+    .modal-caja { grid-template-columns: 1fr; max-height: 100vh; max-width: 100vw; border-radius: 0; }
+    .modal-foto-grande { height: 46vh; }
+  }
+  .modal-cerrar {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(0,0,0,0.55);
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.1rem;
+    z-index: 2;
+  }
+  .modal-foto-grande {
+    position: relative;
+    background: #EDEAE0;
+    height: min(85vh, 900px);
+  }
+  .modal-foto-grande img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .modal-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.45);
+    color: white;
+    border: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-nav.prev { left: 10px; }
+  .modal-nav.next { right: 10px; }
+  .modal-info {
+    padding: 26px 24px;
+    display: flex;
+    flex-direction: column;
+  }
+  .modal-info h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.35rem;
+    margin: 0 0 12px;
+  }
+  .modal-miniaturas {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .modal-desc {
+    white-space: pre-line;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: #4a4938;
+    margin: 0 0 18px;
+    flex: 1;
+  }
+  .modal-precio { font-family: 'Fraunces', serif; margin-bottom: 16px; }
 </style>
 </head>
 <body>
@@ -169,17 +289,14 @@
   <main>
     
     <article class="tarjeta" data-categorias="C">
-      <div class="foto-wrap">
+      <div class="foto-wrap" onclick="abrirModal(0)">
         <img id="foto-BEG-N21-01" src="https://i.ibb.co/YT0xgR5h/6903f5b3aebe.jpg" alt="Begonia maculata" loading="lazy">
         <span class="etiqueta-tallo"></span>
       </div>
-      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/YT0xgR5h/6903f5b3aebe.jpg')" onclick="cambiarFoto(this,'BEG-N21-01','https://i.ibb.co/YT0xgR5h/6903f5b3aebe.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/hFFP2Tn0/d9e62bcd4937.jpg')" onclick="cambiarFoto(this,'BEG-N21-01','https://i.ibb.co/hFFP2Tn0/d9e62bcd4937.jpg')"></button></div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/YT0xgR5h/6903f5b3aebe.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'BEG-N21-01','https://i.ibb.co/YT0xgR5h/6903f5b3aebe.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/hFFP2Tn0/d9e62bcd4937.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'BEG-N21-01','https://i.ibb.co/hFFP2Tn0/d9e62bcd4937.jpg')"></button></div>
       <div class="info">
-        <h3>Begonia maculata</h3>
-        <p class="desc">🌿 Planta exótica – decorativa – begonia
-
-☀️ Luz: Hojas moteadas, muy vistosa.
-💧 Riego moderado. No mojar las hojas al regar, para evitar hon</p>
+        <h3 onclick="abrirModal(0)">Begonia maculata</h3>
+        <p class="desc">🌿 Planta exótica – decorativa – begonia  ☀️ Luz: Hojas moteadas, muy vistosa. 💧 Riego moderado. No mojar las… <button class="ver-mas" onclick="abrirModal(0)">Ver más</button></p>
         <div class="precio-linea"><span class="precio">25000 ARS</span></div>
         <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Begonia%20maculata%20%28c%C3%B3digo%20BEG-N21-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
       </div>
@@ -187,18 +304,14 @@
     
 
     <article class="tarjeta" data-categorias="C D">
-      <div class="foto-wrap">
+      <div class="foto-wrap" onclick="abrirModal(1)">
         <img id="foto-NEOG-N14-01" src="https://i.ibb.co/39m6gVKC/13b90c26006c.jpg" alt="Neomarica gracilis / Lirio caminante" loading="lazy">
         <span class="etiqueta-tallo"></span>
       </div>
       
       <div class="info">
-        <h3>Neomarica gracilis / Lirio caminante</h3>
-        <p class="desc">🌿 
-
-☀️ Luz: Follaje elegante, flores delicadas.
-💧 Riego moderado. Prefiere tierra apenas húmeda, sin encharcar
-📏 Tamaño de maceta: Chico - N</p>
+        <h3 onclick="abrirModal(1)">Neomarica gracilis / Lirio caminante</h3>
+        <p class="desc">🌿   ☀️ Luz: Follaje elegante, flores delicadas. 💧 Riego moderado. Prefiere tierra apenas húmeda, sin… <button class="ver-mas" onclick="abrirModal(1)">Ver más</button></p>
         <div class="precio-linea"><span class="precio">7000 ARS</span></div>
         <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Neomarica%20gracilis%20/%20Lirio%20caminante%20%28c%C3%B3digo%20NEOG-N14-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
       </div>
@@ -206,20 +319,14 @@
     
 
     <article class="tarjeta" data-categorias="C D">
-      <div class="foto-wrap">
+      <div class="foto-wrap" onclick="abrirModal(2)">
         <img id="foto-PLECV-N18-01" src="https://i.ibb.co/PswvVCDs/596920fcab54.jpg" alt="Planta del dinero / Plectranthus verticillatus" loading="lazy">
         <span class="etiqueta-tallo"></span>
       </div>
-      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/PswvVCDs/596920fcab54.jpg')" onclick="cambiarFoto(this,'PLECV-N18-01','https://i.ibb.co/PswvVCDs/596920fcab54.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/kVCvvP6p/26fe4a072233.jpg')" onclick="cambiarFoto(this,'PLECV-N18-01','https://i.ibb.co/kVCvvP6p/26fe4a072233.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/Hwn5XKG/bbe4e495bd3f.jpg')" onclick="cambiarFoto(this,'PLECV-N18-01','https://i.ibb.co/Hwn5XKG/bbe4e495bd3f.jpg')"></button></div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/PswvVCDs/596920fcab54.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'PLECV-N18-01','https://i.ibb.co/PswvVCDs/596920fcab54.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/kVCvvP6p/26fe4a072233.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'PLECV-N18-01','https://i.ibb.co/kVCvvP6p/26fe4a072233.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/Hwn5XKG/bbe4e495bd3f.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'PLECV-N18-01','https://i.ibb.co/Hwn5XKG/bbe4e495bd3f.jpg')"></button></div>
       <div class="info">
-        <h3>Planta del dinero / Plectranthus verticillatus</h3>
-        <p class="desc">🌿 
-
-☀️ Luz: Crecimiento rápido, planta colgante.
-💧 Riego moderado. Riego regular, sin encharcar
-📏 Tamaño de maceta: Medio - N18 
-
-📍 Rosario </p>
+        <h3 onclick="abrirModal(2)">Planta del dinero / Plectranthus verticillatus</h3>
+        <p class="desc">🌿   ☀️ Luz: Crecimiento rápido, planta colgante. 💧 Riego moderado. Riego regular, sin encharcar 📏 Tamaño de… <button class="ver-mas" onclick="abrirModal(2)">Ver más</button></p>
         <div class="precio-linea"><span class="precio">17000 ARS</span></div>
         <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Planta%20del%20dinero%20/%20Plectranthus%20verticillatus%20%28c%C3%B3digo%20PLECV-N18-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
       </div>
@@ -229,10 +336,90 @@
   <footer>
     Tocá "Consultar por WhatsApp" en cualquier planta para preguntar por precio, stock o coordinar la entrega.
   </footer>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-caja">
+      <button class="modal-cerrar" onclick="cerrarModal()">✕</button>
+      <div class="modal-foto-grande">
+        <img id="modalImg" src="" alt="">
+        <button class="modal-nav prev" id="modalPrev" onclick="modalAnterior()">‹</button>
+        <button class="modal-nav next" id="modalNext" onclick="modalSiguiente()">›</button>
+      </div>
+      <div class="modal-info">
+        <h2 id="modalTitulo"></h2>
+        <div class="modal-miniaturas" id="modalMiniaturas"></div>
+        <p class="modal-desc" id="modalDesc"></p>
+        <div class="modal-precio" id="modalPrecio"></div>
+        <a class="boton-wa" id="modalWa" href="#" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </div>
+  </div>
+
   <script>
+    const productos = [{"titulo": "Begonia maculata", "descripcion": "🌿 Planta exótica – decorativa – begonia\n\n☀️ Luz: Hojas moteadas, muy vistosa.\n💧 Riego moderado. No mojar las hojas al regar, para evitar hongos\n📏 Tamaño de maceta: Grande - N21 \n\n📍 Rosario y alrededores · 💬 Consultas por este medio", "fotos": ["https://i.ibb.co/YT0xgR5h/6903f5b3aebe.jpg", "https://i.ibb.co/hFFP2Tn0/d9e62bcd4937.jpg"], "precioHtml": "<span class=\"precio\">25000 ARS<\/span>", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Begonia%20maculata%20%28c%C3%B3digo%20BEG-N21-01%29"}, {"titulo": "Neomarica gracilis / Lirio caminante", "descripcion": "🌿 \n\n☀️ Luz: Follaje elegante, flores delicadas.\n💧 Riego moderado. Prefiere tierra apenas húmeda, sin encharcar\n📏 Tamaño de maceta: Chico - N14 \n\n📍 Rosario y alrededores · 💬 Consultas por este medio", "fotos": ["https://i.ibb.co/39m6gVKC/13b90c26006c.jpg"], "precioHtml": "<span class=\"precio\">7000 ARS<\/span>", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Neomarica%20gracilis%20/%20Lirio%20caminante%20%28c%C3%B3digo%20NEOG-N14-01%29"}, {"titulo": "Planta del dinero / Plectranthus verticillatus", "descripcion": "🌿 \n\n☀️ Luz: Crecimiento rápido, planta colgante.\n💧 Riego moderado. Riego regular, sin encharcar\n📏 Tamaño de maceta: Medio - N18 \n\n📍 Rosario y alrededores · 💬 Consultas por este medio", "fotos": ["https://i.ibb.co/PswvVCDs/596920fcab54.jpg", "https://i.ibb.co/kVCvvP6p/26fe4a072233.jpg", "https://i.ibb.co/Hwn5XKG/bbe4e495bd3f.jpg"], "precioHtml": "<span class=\"precio\">17000 ARS<\/span>", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Planta%20del%20dinero%20/%20Plectranthus%20verticillatus%20%28c%C3%B3digo%20PLECV-N18-01%29"}];
+    let modalProducto = null;
+    let modalFotoIdx = 0;
+
     function cambiarFoto(boton, idGaleria, url) {
       document.getElementById('foto-' + idGaleria).src = url;
     }
+
+    function abrirModal(i) {
+      modalProducto = productos[i];
+      modalFotoIdx = 0;
+      renderModal();
+      document.getElementById('modalOverlay').classList.add('abierto');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function cerrarModal() {
+      document.getElementById('modalOverlay').classList.remove('abierto');
+      document.body.style.overflow = '';
+    }
+
+    function renderModal() {
+      if (!modalProducto) return;
+      document.getElementById('modalImg').src = modalProducto.fotos[modalFotoIdx] || '';
+      document.getElementById('modalTitulo').textContent = modalProducto.titulo;
+      document.getElementById('modalDesc').textContent = modalProducto.descripcion;
+      document.getElementById('modalPrecio').innerHTML = modalProducto.precioHtml;
+      document.getElementById('modalWa').href = modalProducto.link;
+
+      const hayVarias = modalProducto.fotos.length > 1;
+      document.getElementById('modalPrev').style.display = hayVarias ? 'flex' : 'none';
+      document.getElementById('modalNext').style.display = hayVarias ? 'flex' : 'none';
+
+      const cont = document.getElementById('modalMiniaturas');
+      if (hayVarias) {
+        cont.innerHTML = modalProducto.fotos.map(function(url, idx) {
+          return '<button class="mini" style="background-image:url(\'' + url + '\')" ' +
+                 'onclick="modalFotoIdx=' + idx + '; renderModal();"></button>';
+        }).join('');
+      } else {
+        cont.innerHTML = '';
+      }
+    }
+
+    function modalSiguiente() {
+      modalFotoIdx = (modalFotoIdx + 1) % modalProducto.fotos.length;
+      renderModal();
+    }
+
+    function modalAnterior() {
+      modalFotoIdx = (modalFotoIdx - 1 + modalProducto.fotos.length) % modalProducto.fotos.length;
+      renderModal();
+    }
+
+    document.getElementById('modalOverlay').addEventListener('click', function(e) {
+      if (e.target === this) cerrarModal();
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (!document.getElementById('modalOverlay').classList.contains('abierto')) return;
+      if (e.key === 'Escape') cerrarModal();
+      if (e.key === 'ArrowRight') modalSiguiente();
+      if (e.key === 'ArrowLeft') modalAnterior();
+    });
 
     document.querySelectorAll('.filtro').forEach(function(boton) {
       boton.addEventListener('click', function() {
