@@ -48,6 +48,24 @@
     margin: 0;
     font-size: 1rem;
   }
+  .buscador-wrap {
+    max-width: 500px;
+    margin: 28px auto 0;
+    padding: 0 20px;
+  }
+  .buscador {
+    width: 100%;
+    padding: 12px 18px;
+    border-radius: 24px;
+    border: 1px solid #3a3a30;
+    background: #17170f;
+    color: var(--texto);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+  }
+  .buscador::placeholder { color: var(--texto-suave); }
+  .buscador:focus { border-color: var(--verde-planta); }
   main {
     max-width: 1100px;
     margin: 0 auto;
@@ -56,6 +74,14 @@
     grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
     gap: 28px;
   }
+  .sin-resultados {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--texto-suave);
+    padding: 40px 0;
+    display: none;
+  }
+  .sin-resultados.visible { display: block; }
   .tarjeta {
     background: var(--fondo-tarjeta);
     color: var(--texto-tarjeta);
@@ -171,6 +197,10 @@
     font-size: 0.85rem;
     font-weight: 600;
     letter-spacing: 0.01em;
+    border: none;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    width: 100%;
   }
   .boton-wa:hover { background: #9c451f; }
   footer {
@@ -226,6 +256,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    cursor: zoom-in;
     display: block;
   }
   .modal-nav {
@@ -263,6 +294,28 @@
     flex-wrap: wrap;
     margin-bottom: 14px;
   }
+  .modal-tamanos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .chip-tamano {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 1.5px solid #c9c2a8;
+    background: white;
+    color: var(--texto-tarjeta);
+    cursor: pointer;
+  }
+  .chip-tamano.activo {
+    background: var(--verde-precio);
+    border-color: var(--verde-precio);
+    color: white;
+  }
   .modal-desc {
     white-space: pre-line;
     font-size: 0.92rem;
@@ -273,8 +326,6 @@
   }
   .modal-precio { font-family: 'Fraunces', serif; margin-bottom: 16px; }
 
-  .modal-foto-grande img { cursor: zoom-in; }
-
   .imagen-full-overlay {
     position: fixed;
     inset: 0;
@@ -284,14 +335,19 @@
     justify-content: center;
     z-index: 1500;
     padding: 24px;
+    overflow: hidden;
   }
   .imagen-full-overlay.abierta { display: flex; }
   .imagen-full-overlay img {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
-    cursor: default;
+    cursor: zoom-in;
+    transition: transform 0.15s ease;
+    user-select: none;
+    -webkit-user-drag: none;
   }
+  .imagen-full-overlay img.zoom { cursor: zoom-out; }
   .imagen-full-cerrar {
     position: fixed;
     top: calc(env(safe-area-inset-top, 0px) + 14px);
@@ -318,55 +374,809 @@
     <h1>Persefoneplantas</h1>
     <p>Plantas de interior y exterior · Rosario y alrededores</p>
   </header>
+  <div class="buscador-wrap">
+    <input type="text" class="buscador" id="buscador" placeholder="Buscar planta por nombre…">
+  </div>
   <nav class="filtros">
-    <button class="filtro activo" data-filtro="todas">Todas</button><button class="filtro" data-filtro="C">Interior · mucha luz</button><button class="filtro" data-filtro="D">Interior · algo de sol</button>
+    <button class="filtro activo" data-filtro="todas">Todas</button><button class="filtro" data-filtro="A">Interior · oscuro</button><button class="filtro" data-filtro="B">Interior · poca luz</button><button class="filtro" data-filtro="C">Interior · mucha luz</button><button class="filtro" data-filtro="D">Interior · algo de sol</button><button class="filtro" data-filtro="E">Exterior · sol parcial</button><button class="filtro" data-filtro="F">Exterior · pleno sol</button>
   </nav>
   <main>
     
-    <article class="tarjeta" data-categorias="C">
+    <article class="tarjeta" data-categorias="A B" data-nombre="aspidistra elatior / oreja de burro">
       <div class="foto-wrap" onclick="abrirModal(0)">
-        <img id="foto-BEG-N21-01" src="https://i.ibb.co/YT0xgR5h/6903f5b3aebe.jpg" alt="Begonia maculata" loading="lazy">
+        <img id="foto-grupo0" src="https://i.ibb.co/Y7TmTBXN/28f08c219145.jpg" alt="Aspidistra elatior / Oreja de Burro" loading="lazy">
         <span class="etiqueta-tallo"></span>
       </div>
-      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/YT0xgR5h/6903f5b3aebe.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'BEG-N21-01','https://i.ibb.co/YT0xgR5h/6903f5b3aebe.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/hFFP2Tn0/d9e62bcd4937.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'BEG-N21-01','https://i.ibb.co/hFFP2Tn0/d9e62bcd4937.jpg')"></button></div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/Y7TmTBXN/28f08c219145.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo0','https://i.ibb.co/Y7TmTBXN/28f08c219145.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/xqmr69qR/e97d47d8532b.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo0','https://i.ibb.co/xqmr69qR/e97d47d8532b.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/JRRbhXnj/4e58c7d53557.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo0','https://i.ibb.co/JRRbhXnj/4e58c7d53557.jpg')"></button></div>
       <div class="info">
-        <h3 onclick="abrirModal(0)">Begonia maculata</h3>
-        <p class="desc">🌿 Planta exótica – decorativa – begonia  ☀️ Luz: Hojas moteadas, muy vistosa. 💧 Riego moderado. No mojar las… <button class="ver-mas" onclick="abrirModal(0)">Ver más</button></p>
-        <div class="precio-linea"><span class="precio">25000 ARS</span></div>
-        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Begonia%20maculata%20%28c%C3%B3digo%20BEG-N21-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+        <h3 onclick="abrirModal(0)">Aspidistra elatior / Oreja de Burro</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">10.000 ARS</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Aspidistra%20elatior%20/%20Oreja%20de%20Burro%20%28c%C3%B3digo%20ASP-N18-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
       </div>
     </article>
     
 
-    <article class="tarjeta" data-categorias="C D">
+    <article class="tarjeta" data-categorias="B C" data-nombre="ctenanthe setosa / papel de música">
       <div class="foto-wrap" onclick="abrirModal(1)">
-        <img id="foto-NEOG-N14-01" src="https://i.ibb.co/39m6gVKC/13b90c26006c.jpg" alt="Neomarica gracilis / Lirio caminante" loading="lazy">
+        <img id="foto-grupo1" src="https://i.ibb.co/qLPLpq47/4f81b9e575d4.jpg" alt="Ctenanthe setosa / Papel de música" loading="lazy">
         <span class="etiqueta-tallo"></span>
       </div>
-      
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/qLPLpq47/4f81b9e575d4.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo1','https://i.ibb.co/qLPLpq47/4f81b9e575d4.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/60Gmf9Fz/8d231bd56eff.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo1','https://i.ibb.co/60Gmf9Fz/8d231bd56eff.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/8DNr1nYk/b487e7c0fed8.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo1','https://i.ibb.co/8DNr1nYk/b487e7c0fed8.jpg')"></button></div>
       <div class="info">
-        <h3 onclick="abrirModal(1)">Neomarica gracilis / Lirio caminante</h3>
-        <p class="desc">🌿   ☀️ Luz: Follaje elegante, flores delicadas. 💧 Riego moderado. Prefiere tierra apenas húmeda, sin… <button class="ver-mas" onclick="abrirModal(1)">Ver más</button></p>
-        <div class="precio-linea"><span class="precio">7000 ARS</span></div>
-        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Neomarica%20gracilis%20/%20Lirio%20caminante%20%28c%C3%B3digo%20NEOG-N14-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+        <h3 onclick="abrirModal(1)">Ctenanthe setosa / Papel de música</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">14.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(1)">Ver tamaños</button>
       </div>
     </article>
     
 
-    <article class="tarjeta" data-categorias="C D">
+    <article class="tarjeta" data-categorias="B C" data-nombre="peperomia serpens">
       <div class="foto-wrap" onclick="abrirModal(2)">
-        <img id="foto-PLECV-N18-01" src="https://i.ibb.co/PswvVCDs/596920fcab54.jpg" alt="Planta del dinero / Plectranthus verticillatus" loading="lazy">
+        <img id="foto-grupo2" src="https://i.ibb.co/DgLghWpT/6ce96c47c470.jpg" alt="Peperomia serpens" loading="lazy">
         <span class="etiqueta-tallo"></span>
       </div>
-      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/PswvVCDs/596920fcab54.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'PLECV-N18-01','https://i.ibb.co/PswvVCDs/596920fcab54.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/kVCvvP6p/26fe4a072233.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'PLECV-N18-01','https://i.ibb.co/kVCvvP6p/26fe4a072233.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/Hwn5XKG/bbe4e495bd3f.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'PLECV-N18-01','https://i.ibb.co/Hwn5XKG/bbe4e495bd3f.jpg')"></button></div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/DgLghWpT/6ce96c47c470.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo2','https://i.ibb.co/DgLghWpT/6ce96c47c470.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/9RJZV27/0d29d22314e3.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo2','https://i.ibb.co/9RJZV27/0d29d22314e3.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/1tD8Mfsr/b544211d31a5.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo2','https://i.ibb.co/1tD8Mfsr/b544211d31a5.jpg')"></button></div>
       <div class="info">
-        <h3 onclick="abrirModal(2)">Planta del dinero / Plectranthus verticillatus</h3>
-        <p class="desc">🌿   ☀️ Luz: Crecimiento rápido, planta colgante. 💧 Riego moderado. Riego regular, sin encharcar 📏 Tamaño de… <button class="ver-mas" onclick="abrirModal(2)">Ver más</button></p>
-        <div class="precio-linea"><span class="precio">17000 ARS</span></div>
+        <h3 onclick="abrirModal(2)">Peperomia serpens</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">12.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(2)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="B C" data-nombre="aglaonema modestum / siempreverde chino">
+      <div class="foto-wrap" onclick="abrirModal(3)">
+        <img id="foto-grupo3" src="https://i.ibb.co/jv89fqTf/a996812b077b.jpg" alt="Aglaonema modestum / siempreverde chino" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/jv89fqTf/a996812b077b.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo3','https://i.ibb.co/jv89fqTf/a996812b077b.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/dwgvHb7t/48efd635f45a.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo3','https://i.ibb.co/dwgvHb7t/48efd635f45a.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/1fLjvMtC/e5a0b5657398.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo3','https://i.ibb.co/1fLjvMtC/e5a0b5657398.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/twL4wk5x/7d195e54361b.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo3','https://i.ibb.co/twL4wk5x/7d195e54361b.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(3)">Aglaonema modestum / siempreverde chino</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">10.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(3)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="C" data-nombre="dracaena marginata">
+      <div class="foto-wrap" onclick="abrirModal(4)">
+        <img id="foto-grupo4" src="https://i.ibb.co/Mys6bYnt/1673cc25a416.jpg" alt="Dracaena marginata" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/Mys6bYnt/1673cc25a416.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo4','https://i.ibb.co/Mys6bYnt/1673cc25a416.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/6R0VTzfm/8b331ad20969.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo4','https://i.ibb.co/6R0VTzfm/8b331ad20969.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(4)">Dracaena marginata</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">10.000 – 15.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(4)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="B C" data-nombre="dracaena fragrans / palo de agua">
+      <div class="foto-wrap" onclick="abrirModal(5)">
+        <img id="foto-grupo5" src="https://i.ibb.co/ynPT2fmD/0040977860dd.jpg" alt="Dracaena fragrans / Palo de agua" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/ynPT2fmD/0040977860dd.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo5','https://i.ibb.co/ynPT2fmD/0040977860dd.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/HTJJmPCx/bd7f2bea840f.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo5','https://i.ibb.co/HTJJmPCx/bd7f2bea840f.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/zT4g3RZj/a1898b61677c.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo5','https://i.ibb.co/zT4g3RZj/a1898b61677c.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/60bLFc3r/4254ec9a5918.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo5','https://i.ibb.co/60bLFc3r/4254ec9a5918.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(5)">Dracaena fragrans / Palo de agua</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">15.000 – 30.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(5)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="A B C" data-nombre="sansevieria trifasciata &#x27;black coral&#x27; / dracaena trifasciata / lengua de suegra">
+      <div class="foto-wrap" onclick="abrirModal(6)">
+        <img id="foto-grupo6" src="https://i.ibb.co/XZTcYVHd/70b5cc014829.jpg" alt="Sansevieria trifasciata &#x27;Black Coral&#x27; / Dracaena trifasciata / Lengua de suegra" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/XZTcYVHd/70b5cc014829.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo6','https://i.ibb.co/XZTcYVHd/70b5cc014829.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/XfsKCwv8/95052269e931.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo6','https://i.ibb.co/XfsKCwv8/95052269e931.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/V0shmrWy/4cb390eeaf66.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo6','https://i.ibb.co/V0shmrWy/4cb390eeaf66.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/xth8TdMH/7e68353c6ab2.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo6','https://i.ibb.co/xth8TdMH/7e68353c6ab2.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(6)">Sansevieria trifasciata &#x27;Black Coral&#x27; / Dracaena trifasciata / Lengua de suegra</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">4.000 ARS</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Sansevieria%20trifasciata%20%27Black%20Coral%27%20/%20Dracaena%20trifasciata%20/%20Lengua%20de%20suegra%20%28c%C3%B3digo%20SANB-N8-02%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="B C" data-nombre="singonio / syngonium / planta flecha">
+      <div class="foto-wrap" onclick="abrirModal(7)">
+        <img id="foto-grupo7" src="https://i.ibb.co/x8H3tzBf/0c2e5c42ce57.jpg" alt="Singonio / Syngonium / Planta flecha" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/x8H3tzBf/0c2e5c42ce57.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo7','https://i.ibb.co/x8H3tzBf/0c2e5c42ce57.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/9m5WvYnp/1474256af74b.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo7','https://i.ibb.co/9m5WvYnp/1474256af74b.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/twbkgRB1/76330ebf3ad3.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo7','https://i.ibb.co/twbkgRB1/76330ebf3ad3.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(7)">Singonio / Syngonium / Planta flecha</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">8.000 – 20.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(7)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="C" data-nombre="begonia maculata">
+      <div class="foto-wrap" onclick="abrirModal(8)">
+        <img id="foto-grupo8" src="https://i.ibb.co/ZRWsxMZQ/0e6087ffd096.jpg" alt="Begonia maculata" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/ZRWsxMZQ/0e6087ffd096.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo8','https://i.ibb.co/ZRWsxMZQ/0e6087ffd096.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/G4ZvvSd5/bcd259519ff0.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo8','https://i.ibb.co/G4ZvvSd5/bcd259519ff0.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/GvWbscjB/ea2b67d0c31a.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo8','https://i.ibb.co/GvWbscjB/ea2b67d0c31a.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/cS2B3Sth/e035b956a875.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo8','https://i.ibb.co/cS2B3Sth/e035b956a875.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(8)">Begonia maculata</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">15.000 – 25.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(8)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="C D" data-nombre="neomarica gracilis / lirio caminante">
+      <div class="foto-wrap" onclick="abrirModal(9)">
+        <img id="foto-grupo9" src="https://i.ibb.co/Y7Pv4DGZ/44f8a2d62303.jpg" alt="Neomarica gracilis / Lirio caminante" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/Y7Pv4DGZ/44f8a2d62303.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo9','https://i.ibb.co/Y7Pv4DGZ/44f8a2d62303.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/fdcqZy6Y/f41745814e1e.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo9','https://i.ibb.co/fdcqZy6Y/f41745814e1e.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/RGWBfvT6/1c57182d5830.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo9','https://i.ibb.co/RGWBfvT6/1c57182d5830.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/nNrBJnzS/f13425b6e9ee.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo9','https://i.ibb.co/nNrBJnzS/f13425b6e9ee.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/DHqf5xd0/efe95aca78ff.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo9','https://i.ibb.co/DHqf5xd0/efe95aca78ff.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/NdhfmSSk/9b6c218bc7a2.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo9','https://i.ibb.co/NdhfmSSk/9b6c218bc7a2.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(9)">Neomarica gracilis / Lirio caminante</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">4.000 – 9.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(9)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="B C D" data-nombre="potus / epipremnum aureum">
+      <div class="foto-wrap" onclick="abrirModal(10)">
+        <img id="foto-grupo10" src="https://i.ibb.co/Z1SLtbM8/c790d73b2a91.jpg" alt="Potus / Epipremnum aureum" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/Z1SLtbM8/c790d73b2a91.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo10','https://i.ibb.co/Z1SLtbM8/c790d73b2a91.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/R4Nwh27w/2016af6f21f9.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo10','https://i.ibb.co/R4Nwh27w/2016af6f21f9.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/6JcR0zzC/d788fedb2353.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo10','https://i.ibb.co/6JcR0zzC/d788fedb2353.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(10)">Potus / Epipremnum aureum</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">12.000 – 24.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(10)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="C D" data-nombre="callisia repens">
+      <div class="foto-wrap" onclick="abrirModal(11)">
+        <img id="foto-grupo11" src="https://i.ibb.co/bMkNwkYz/e6364b20eac3.jpg" alt="Callisia repens" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/bMkNwkYz/e6364b20eac3.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo11','https://i.ibb.co/bMkNwkYz/e6364b20eac3.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/rKt64j6w/783eaed6136e.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo11','https://i.ibb.co/rKt64j6w/783eaed6136e.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/1fcgTBVp/932d4ba622f0.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo11','https://i.ibb.co/1fcgTBVp/932d4ba622f0.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(11)">Callisia repens</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">3.000 ARS</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Callisia%20repens%20%28c%C3%B3digo%20CALR-N8-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="C D" data-nombre="planta canasta / callisia fragrans">
+      <div class="foto-wrap" onclick="abrirModal(12)">
+        <img id="foto-grupo12" src="https://i.ibb.co/9Hbt0WdP/a7b0334b8810.jpg" alt="Planta canasta / Callisia fragrans" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/9Hbt0WdP/a7b0334b8810.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo12','https://i.ibb.co/9Hbt0WdP/a7b0334b8810.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/XrqFmtXB/7eef971ba54a.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo12','https://i.ibb.co/XrqFmtXB/7eef971ba54a.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/v60K8HQL/72862f671d6d.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo12','https://i.ibb.co/v60K8HQL/72862f671d6d.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/DD6dPH2v/5aeca05bc60e.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo12','https://i.ibb.co/DD6dPH2v/5aeca05bc60e.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(12)">Planta canasta / Callisia fragrans</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">12.000 ARS</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Planta%20canasta%20/%20Callisia%20fragrans%20%28c%C3%B3digo%20CALF-B18-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="D E" data-nombre="tradescantia sillamontana">
+      <div class="foto-wrap" onclick="abrirModal(13)">
+        <img id="foto-grupo13" src="https://i.ibb.co/h1Mjcvss/04fd11f36163.jpg" alt="Tradescantia sillamontana" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/h1Mjcvss/04fd11f36163.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo13','https://i.ibb.co/h1Mjcvss/04fd11f36163.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/8L5Xhc9c/66cb8ee4ad05.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo13','https://i.ibb.co/8L5Xhc9c/66cb8ee4ad05.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/KcDb73kZ/abdc4e3c3ec1.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo13','https://i.ibb.co/KcDb73kZ/abdc4e3c3ec1.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/G4R6wKMW/ebbf18afbdcd.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo13','https://i.ibb.co/G4R6wKMW/ebbf18afbdcd.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(13)">Tradescantia sillamontana</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">3.500 – 9.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(13)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="C" data-nombre="helecho espárrago / asparagus densiflorus">
+      <div class="foto-wrap" onclick="abrirModal(14)">
+        <img id="foto-grupo14" src="https://i.ibb.co/JFdbqHZ1/539be15eaa7d.jpg" alt="Helecho espárrago / Asparagus densiflorus" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/JFdbqHZ1/539be15eaa7d.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo14','https://i.ibb.co/JFdbqHZ1/539be15eaa7d.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/xS8mLPB8/f4232648be0d.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo14','https://i.ibb.co/xS8mLPB8/f4232648be0d.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/6cTF82m9/ec3a7e8ff630.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo14','https://i.ibb.co/6cTF82m9/ec3a7e8ff630.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/Xf4yZJtx/6f32158c5081.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo14','https://i.ibb.co/Xf4yZJtx/6f32158c5081.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/GvjYtcD1/bd1df49019b3.png')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo14','https://i.ibb.co/GvjYtcD1/bd1df49019b3.png')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(14)">Helecho espárrago / Asparagus densiflorus</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">5.000 ARS</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Helecho%20esp%C3%A1rrago%20/%20Asparagus%20densiflorus%20%28c%C3%B3digo%20HELE-N12-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="D E" data-nombre="haworthia">
+      <div class="foto-wrap" onclick="abrirModal(15)">
+        <img id="foto-grupo15" src="https://i.ibb.co/PzTCPVN3/9688e8257b17.jpg" alt="Haworthia" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/PzTCPVN3/9688e8257b17.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo15','https://i.ibb.co/PzTCPVN3/9688e8257b17.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/GQyP3H0C/da4b75e4a90d.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo15','https://i.ibb.co/GQyP3H0C/da4b75e4a90d.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/396XjLL6/599faf5fe439.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo15','https://i.ibb.co/396XjLL6/599faf5fe439.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/HpM2wJrg/3a8227c9cb0f.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo15','https://i.ibb.co/HpM2wJrg/3a8227c9cb0f.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(15)">Haworthia</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">4.000 – 10.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(15)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="D E" data-nombre="gasteria carinata var. verrucosa">
+      <div class="foto-wrap" onclick="abrirModal(16)">
+        <img id="foto-grupo16" src="https://i.ibb.co/R4dSLxcM/71298c1c2c4e.jpg" alt="Gasteria carinata var. verrucosa" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/R4dSLxcM/71298c1c2c4e.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo16','https://i.ibb.co/R4dSLxcM/71298c1c2c4e.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/tppKw7tQ/a0ee2a677efb.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo16','https://i.ibb.co/tppKw7tQ/a0ee2a677efb.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/6RbSJfJr/238dbb1bb36d.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo16','https://i.ibb.co/6RbSJfJr/238dbb1bb36d.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/0ygNGGz2/b8b6f68fa671.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo16','https://i.ibb.co/0ygNGGz2/b8b6f68fa671.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/0jBbdp4h/91f6e75c189c.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo16','https://i.ibb.co/0jBbdp4h/91f6e75c189c.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(16)">Gasteria carinata var. verrucosa</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">9.000 ARS</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Gasteria%20carinata%20var.%20verrucosa%20%28c%C3%B3digo%20GAS-N18-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="C D" data-nombre="lazo de amor / chlorophytum comosum">
+      <div class="foto-wrap" onclick="abrirModal(17)">
+        <img id="foto-grupo17" src="https://i.ibb.co/WNG4PxMd/a8dc80ff6d9b.jpg" alt="Lazo de amor / Chlorophytum comosum" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/WNG4PxMd/a8dc80ff6d9b.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo17','https://i.ibb.co/WNG4PxMd/a8dc80ff6d9b.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/nM5jgYvQ/9e1816f7c9fb.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo17','https://i.ibb.co/nM5jgYvQ/9e1816f7c9fb.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/zHxTfxr7/038bd9c0ef8c.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo17','https://i.ibb.co/zHxTfxr7/038bd9c0ef8c.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/HpqP3X9d/9fa3eed5408a.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo17','https://i.ibb.co/HpqP3X9d/9fa3eed5408a.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(17)">Lazo de amor / Chlorophytum comosum</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">3.000 – 10.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(17)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="C D" data-nombre="planta del dinero / plectranthus verticillatus">
+      <div class="foto-wrap" onclick="abrirModal(18)">
+        <img id="foto-grupo18" src="https://i.ibb.co/HLdYBWd7/4b7a431dbf02.jpg" alt="Planta del dinero / Plectranthus verticillatus" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/HLdYBWd7/4b7a431dbf02.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo18','https://i.ibb.co/HLdYBWd7/4b7a431dbf02.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/YBcgj4RQ/dab2f7910c39.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo18','https://i.ibb.co/YBcgj4RQ/dab2f7910c39.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/kVPfkrHc/d0e53b10a1f4.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo18','https://i.ibb.co/kVPfkrHc/d0e53b10a1f4.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/xqMP1L7g/ecf6fc6bf512.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo18','https://i.ibb.co/xqMP1L7g/ecf6fc6bf512.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(18)">Planta del dinero / Plectranthus verticillatus</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">17.000 ARS</span></div>
         <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Planta%20del%20dinero%20/%20Plectranthus%20verticillatus%20%28c%C3%B3digo%20PLECV-N18-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
       </div>
     </article>
     
+
+    <article class="tarjeta" data-categorias="C D" data-nombre="cóleo / coleus scutellarioides / plectranthus scutellarioides">
+      <div class="foto-wrap" onclick="abrirModal(19)">
+        <img id="foto-grupo19" src="https://i.ibb.co/sp7Rjphy/cd76578b0f53.jpg" alt="Cóleo / Coleus scutellarioides / Plectranthus scutellarioides" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/sp7Rjphy/cd76578b0f53.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo19','https://i.ibb.co/sp7Rjphy/cd76578b0f53.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/Xh0pdKB/50a97c2ac88d.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo19','https://i.ibb.co/Xh0pdKB/50a97c2ac88d.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/qXSsRy8/b8849f59bd25.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo19','https://i.ibb.co/qXSsRy8/b8849f59bd25.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(19)">Cóleo / Coleus scutellarioides / Plectranthus scutellarioides</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">5.000 – 6.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(19)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="C D" data-nombre="schlumbergera / cactus de navidad / santa teresita / pata de jaiba">
+      <div class="foto-wrap" onclick="abrirModal(20)">
+        <img id="foto-grupo20" src="https://i.ibb.co/dwr6vk8f/19e385f88d9a.jpg" alt="Schlumbergera / Cactus de Navidad / Santa Teresita / Pata de Jaiba" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/dwr6vk8f/19e385f88d9a.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo20','https://i.ibb.co/dwr6vk8f/19e385f88d9a.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/W4FTc8td/e97b53fbfdd5.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo20','https://i.ibb.co/W4FTc8td/e97b53fbfdd5.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/W4jt9DHp/cf480f9b7dd2.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo20','https://i.ibb.co/W4jt9DHp/cf480f9b7dd2.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/Y7YvPkJJ/322154f1f134.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo20','https://i.ibb.co/Y7YvPkJJ/322154f1f134.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(20)">Schlumbergera / Cactus de Navidad / Santa Teresita / Pata de Jaiba</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">6.000 ARS</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Schlumbergera%20/%20Cactus%20de%20Navidad%20/%20Santa%20Teresita%20/%20Pata%20de%20Jaiba%20%28c%C3%B3digo%20SCH-N8-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="C D" data-nombre="epiphyllum oxypetalum / reina de la noche">
+      <div class="foto-wrap" onclick="abrirModal(21)">
+        <img id="foto-grupo21" src="https://i.ibb.co/SDTrbV6Z/d883dcbe9116.jpg" alt="Epiphyllum oxypetalum / Reina de la noche" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/SDTrbV6Z/d883dcbe9116.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo21','https://i.ibb.co/SDTrbV6Z/d883dcbe9116.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/PZ6VhdxF/872321c571f6.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo21','https://i.ibb.co/PZ6VhdxF/872321c571f6.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/CKg206nB/e37f75d086ae.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo21','https://i.ibb.co/CKg206nB/e37f75d086ae.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/PsGyJ2wd/448269201af6.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo21','https://i.ibb.co/PsGyJ2wd/448269201af6.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/Zz09SsLS/2d2945ba7f27.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo21','https://i.ibb.co/Zz09SsLS/2d2945ba7f27.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/8grVm4qc/ef1fa34757fc.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo21','https://i.ibb.co/8grVm4qc/ef1fa34757fc.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/gb5KY38g/4ccab19450a1.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo21','https://i.ibb.co/gb5KY38g/4ccab19450a1.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(21)">Epiphyllum oxypetalum / Reina de la noche</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">7.000 – 8.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(21)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="E F" data-nombre="selenicereus undatus / pitahaya">
+      <div class="foto-wrap" onclick="abrirModal(22)">
+        <img id="foto-grupo22" src="https://i.ibb.co/spMpQmGC/b6483f4e0c96.jpg" alt="Selenicereus undatus / Pitahaya" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/spMpQmGC/b6483f4e0c96.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo22','https://i.ibb.co/spMpQmGC/b6483f4e0c96.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/LhBNdwtv/a451ac3d2c2b.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo22','https://i.ibb.co/LhBNdwtv/a451ac3d2c2b.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/0vdtRks/4b967778a680.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo22','https://i.ibb.co/0vdtRks/4b967778a680.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/v4DqC7LK/74646298da66.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo22','https://i.ibb.co/v4DqC7LK/74646298da66.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/gMDhzWRq/4a22543fcd75.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo22','https://i.ibb.co/gMDhzWRq/4a22543fcd75.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/F44sPxTD/73c0e0cf2866.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo22','https://i.ibb.co/F44sPxTD/73c0e0cf2866.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/8LKfWFzt/87a47fb329da.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo22','https://i.ibb.co/8LKfWFzt/87a47fb329da.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/vCJg6z1b/fdd16318fd8f.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo22','https://i.ibb.co/vCJg6z1b/fdd16318fd8f.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(22)">Selenicereus undatus / Pitahaya</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">5.000 ARS</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Selenicereus%20undatus%20/%20Pitahaya%20%28c%C3%B3digo%20SELU-N14-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="C D" data-nombre="selenicereus anthonyanus / espina de pescado">
+      <div class="foto-wrap" onclick="abrirModal(23)">
+        <img id="foto-grupo23" src="https://i.ibb.co/35KW7M6M/8884ed23d762.jpg" alt="Selenicereus anthonyanus / Espina de pescado" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/35KW7M6M/8884ed23d762.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo23','https://i.ibb.co/35KW7M6M/8884ed23d762.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/mCLHcZvS/ac3d7c2ce7f8.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo23','https://i.ibb.co/mCLHcZvS/ac3d7c2ce7f8.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/96dJrcL/abecb8b4b9d6.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo23','https://i.ibb.co/96dJrcL/abecb8b4b9d6.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/FL53tRs4/f0f79359c892.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo23','https://i.ibb.co/FL53tRs4/f0f79359c892.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/5hJ29WqF/c17049e2e689.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo23','https://i.ibb.co/5hJ29WqF/c17049e2e689.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(23)">Selenicereus anthonyanus / Espina de pescado</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">10.000 – 15.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(23)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="E F" data-nombre="aptenia cordifolia &#x27;variegata&#x27; / baby sun rose">
+      <div class="foto-wrap" onclick="abrirModal(24)">
+        <img id="foto-grupo24" src="https://i.ibb.co/v4rKvYVH/3c28db1a7501.jpg" alt="Aptenia cordifolia &#x27;Variegata&#x27; / Baby Sun Rose" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/v4rKvYVH/3c28db1a7501.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo24','https://i.ibb.co/v4rKvYVH/3c28db1a7501.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/tpQzJQTh/c560a1af76f8.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo24','https://i.ibb.co/tpQzJQTh/c560a1af76f8.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/DgQ0mhzs/8d9e6de78d85.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo24','https://i.ibb.co/DgQ0mhzs/8d9e6de78d85.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/C5BGHwHT/e5ba6721f91e.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo24','https://i.ibb.co/C5BGHwHT/e5ba6721f91e.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/q3B7X4n1/f5c4c37aa905.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo24','https://i.ibb.co/q3B7X4n1/f5c4c37aa905.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(24)">Aptenia cordifolia &#x27;Variegata&#x27; / Baby Sun Rose</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">8.000 ARS</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Aptenia%20cordifolia%20%27Variegata%27%20/%20Baby%20Sun%20Rose%20%28c%C3%B3digo%20ACB-N12-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="D E" data-nombre="stapelia grandiflora &#x27;flor roja&#x27;">
+      <div class="foto-wrap" onclick="abrirModal(25)">
+        <img id="foto-grupo25" src="https://i.ibb.co/fGvxs2gF/9f28229e3c53.jpg" alt="Stapelia grandiflora &#x27;flor roja&#x27;" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/fGvxs2gF/9f28229e3c53.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo25','https://i.ibb.co/fGvxs2gF/9f28229e3c53.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/XrxxzcJv/cf5d4bd8b2cb.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo25','https://i.ibb.co/XrxxzcJv/cf5d4bd8b2cb.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/xt6zsSHT/fbab89d16bd7.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo25','https://i.ibb.co/xt6zsSHT/fbab89d16bd7.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/hFWD8s8S/aaefbf0d3fa2.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo25','https://i.ibb.co/hFWD8s8S/aaefbf0d3fa2.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(25)">Stapelia grandiflora &#x27;flor roja&#x27;</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">3.000 – 5.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(25)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="D E" data-nombre="stapelia variegata">
+      <div class="foto-wrap" onclick="abrirModal(26)">
+        <img id="foto-grupo26" src="https://i.ibb.co/Cp76LXj9/264cca2a0257.jpg" alt="Stapelia variegata" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/Cp76LXj9/264cca2a0257.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo26','https://i.ibb.co/Cp76LXj9/264cca2a0257.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/8nz7B9r6/028af3aabc06.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo26','https://i.ibb.co/8nz7B9r6/028af3aabc06.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/B2B12h9s/097c7f06f9c2.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo26','https://i.ibb.co/B2B12h9s/097c7f06f9c2.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/rRTChNkN/3f572622baac.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo26','https://i.ibb.co/rRTChNkN/3f572622baac.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/CKHKGJLK/f3db033624dd.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo26','https://i.ibb.co/CKHKGJLK/f3db033624dd.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(26)">Stapelia variegata</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">3.500 – 5.500 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(26)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="D E" data-nombre="euphorbia trigona">
+      <div class="foto-wrap" onclick="abrirModal(27)">
+        <img id="foto-grupo27" src="https://i.ibb.co/SwKjNCbn/9563929dc09f.jpg" alt="Euphorbia Trigona" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/SwKjNCbn/9563929dc09f.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo27','https://i.ibb.co/SwKjNCbn/9563929dc09f.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/qYhKcsbf/51fd2f6c12e6.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo27','https://i.ibb.co/qYhKcsbf/51fd2f6c12e6.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/ccXbff83/2b1ac0d2fe8a.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo27','https://i.ibb.co/ccXbff83/2b1ac0d2fe8a.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(27)">Euphorbia Trigona</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">5.000 – 6.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(27)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="E F" data-nombre="echeveria rozen (gibbiflora y lilacina)">
+      <div class="foto-wrap" onclick="abrirModal(28)">
+        <img id="foto-grupo28" src="https://i.ibb.co/R4YX12k6/e850dc937929.jpg" alt="Echeveria Rozen (gibbiflora y lilacina)" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/R4YX12k6/e850dc937929.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo28','https://i.ibb.co/R4YX12k6/e850dc937929.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/4RLKgJDj/8a8d1f04418d.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo28','https://i.ibb.co/4RLKgJDj/8a8d1f04418d.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/RpybX3CX/5c3132f61428.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo28','https://i.ibb.co/RpybX3CX/5c3132f61428.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/LzkSYLhd/cfff2873a369.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo28','https://i.ibb.co/LzkSYLhd/cfff2873a369.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(28)">Echeveria Rozen (gibbiflora y lilacina)</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">4.000 ARS</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Echeveria%20Rozen%20%28gibbiflora%20y%20lilacina%29%20%28c%C3%B3digo%20ECHR-N8-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="E F" data-nombre="echeveria carnicolor">
+      <div class="foto-wrap" onclick="abrirModal(29)">
+        <img id="foto-grupo29" src="https://i.ibb.co/fdHpmg8c/1427669d84fe.jpg" alt="Echeveria carnicolor" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/fdHpmg8c/1427669d84fe.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo29','https://i.ibb.co/fdHpmg8c/1427669d84fe.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/H8jsvDZ/a56dc52957c8.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo29','https://i.ibb.co/H8jsvDZ/a56dc52957c8.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/HfZ9g8x7/449183b366ae.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo29','https://i.ibb.co/HfZ9g8x7/449183b366ae.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/K1bbJHB/6cc92bed3a67.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo29','https://i.ibb.co/K1bbJHB/6cc92bed3a67.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/CKqHzBpq/f93cc3d65b12.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo29','https://i.ibb.co/CKqHzBpq/f93cc3d65b12.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(29)">Echeveria carnicolor</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">4.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(29)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="D E" data-nombre="graptopetalum paraguayense">
+      <div class="foto-wrap" onclick="abrirModal(30)">
+        <img id="foto-grupo30" src="https://i.ibb.co/spjW2j9Q/10ac239df530.jpg" alt="Graptopetalum paraguayense" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/spjW2j9Q/10ac239df530.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo30','https://i.ibb.co/spjW2j9Q/10ac239df530.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/3yGSX1L6/25a140486fa4.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo30','https://i.ibb.co/3yGSX1L6/25a140486fa4.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/4ZmZ0nCL/796f9fbb2e18.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo30','https://i.ibb.co/4ZmZ0nCL/796f9fbb2e18.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/Kx7gZmFH/955920c53398.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo30','https://i.ibb.co/Kx7gZmFH/955920c53398.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/R49xFf4b/e2ecab19fe6c.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo30','https://i.ibb.co/R49xFf4b/e2ecab19fe6c.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(30)">Graptopetalum paraguayense</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">2.500 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(30)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="E F" data-nombre="mammillaria gracilis">
+      <div class="foto-wrap" onclick="abrirModal(31)">
+        <img id="foto-grupo31" src="https://i.ibb.co/r2ZKGtNR/ee34b9b7681b.jpg" alt="Mammillaria gracilis" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/r2ZKGtNR/ee34b9b7681b.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo31','https://i.ibb.co/r2ZKGtNR/ee34b9b7681b.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/Ng4BVpGm/54946a92e65c.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo31','https://i.ibb.co/Ng4BVpGm/54946a92e65c.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/Kz7QLwLj/7a6efc7c8da1.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo31','https://i.ibb.co/Kz7QLwLj/7a6efc7c8da1.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/BV1hRCnt/25568e1fc2cb.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo31','https://i.ibb.co/BV1hRCnt/25568e1fc2cb.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(31)">Mammillaria gracilis</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">2.000 ARS</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Mammillaria%20gracilis%20%28c%C3%B3digo%20MAMG-N8-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="E F" data-nombre="mammillaria prolifera">
+      <div class="foto-wrap" onclick="abrirModal(32)">
+        <img id="foto-grupo32" src="https://i.ibb.co/dnJFbPK/a4c057591637.jpg" alt="Mammillaria prolifera" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/dnJFbPK/a4c057591637.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo32','https://i.ibb.co/dnJFbPK/a4c057591637.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/XfNdHd7F/4b8a54101e35.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo32','https://i.ibb.co/XfNdHd7F/4b8a54101e35.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/v6w3yJ38/f346fc3578fe.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo32','https://i.ibb.co/v6w3yJ38/f346fc3578fe.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/KpK1D7FQ/93b8fe9c0fef.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo32','https://i.ibb.co/KpK1D7FQ/93b8fe9c0fef.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(32)">Mammillaria prolifera</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">2.500 ARS</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Mammillaria%20prolifera%20%28c%C3%B3digo%20MAMP-N8-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="E F" data-nombre="opuntia monacantha f. monstruosa">
+      <div class="foto-wrap" onclick="abrirModal(33)">
+        <img id="foto-grupo33" src="https://i.ibb.co/X6PJJGW/9b2f6e080e9f.jpg" alt="Opuntia monacantha f. monstruosa" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/X6PJJGW/9b2f6e080e9f.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo33','https://i.ibb.co/X6PJJGW/9b2f6e080e9f.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/nq89ZKky/f1d543e8f33a.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo33','https://i.ibb.co/nq89ZKky/f1d543e8f33a.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/ch3vYkR2/d50e91af341f.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo33','https://i.ibb.co/ch3vYkR2/d50e91af341f.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(33)">Opuntia monacantha f. monstruosa</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">2.500 ARS</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Opuntia%20monacantha%20f.%20monstruosa%20%28c%C3%B3digo%20OPMO-N8-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="E F" data-nombre="opuntia microdasys">
+      <div class="foto-wrap" onclick="abrirModal(34)">
+        <img id="foto-grupo34" src="https://i.ibb.co/Y49pJ4Q0/2dcbadb3b9e2.jpg" alt="Opuntia microdasys" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/Y49pJ4Q0/2dcbadb3b9e2.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo34','https://i.ibb.co/Y49pJ4Q0/2dcbadb3b9e2.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/S4vCD3cv/c8b6776c5da4.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo34','https://i.ibb.co/S4vCD3cv/c8b6776c5da4.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/yBN63dS8/ddd9a9f7ac2e.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo34','https://i.ibb.co/yBN63dS8/ddd9a9f7ac2e.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/KxXz5CwW/e87d04b0bd16.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo34','https://i.ibb.co/KxXz5CwW/e87d04b0bd16.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(34)">Opuntia microdasys</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">3.000 ARS</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Opuntia%20microdasys%20%28c%C3%B3digo%20OPMI-N8-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="E F" data-nombre="opuntia elata &#x27;delgada&#x27;">
+      <div class="foto-wrap" onclick="abrirModal(35)">
+        <img id="foto-grupo35" src="https://i.ibb.co/dsSwmgd2/c7c8af4801e8.jpg" alt="Opuntia elata &#x27;Delgada&#x27;" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/dsSwmgd2/c7c8af4801e8.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo35','https://i.ibb.co/dsSwmgd2/c7c8af4801e8.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/QZFFbxy/dc3d247180ac.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo35','https://i.ibb.co/QZFFbxy/dc3d247180ac.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/JFgJPKWf/600fa98c07ce.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo35','https://i.ibb.co/JFgJPKWf/600fa98c07ce.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(35)">Opuntia elata &#x27;Delgada&#x27;</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">2.000 ARS</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Opuntia%20elata%20%27Delgada%27%20%28c%C3%B3digo%20OPELD-N8-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="E F" data-nombre="opuntia elata &#x27;gruesa&#x27;">
+      <div class="foto-wrap" onclick="abrirModal(36)">
+        <img id="foto-grupo36" src="https://i.ibb.co/jZLsBND4/245355b729a7.jpg" alt="Opuntia elata &#x27;Gruesa&#x27;" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/jZLsBND4/245355b729a7.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo36','https://i.ibb.co/jZLsBND4/245355b729a7.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/LzJ4gNzb/f939b2ee912e.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo36','https://i.ibb.co/LzJ4gNzb/f939b2ee912e.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/zhBGXnRb/d4b5bb388a49.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo36','https://i.ibb.co/zhBGXnRb/d4b5bb388a49.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/60LNPP1L/c8a7005eeb12.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo36','https://i.ibb.co/60LNPP1L/c8a7005eeb12.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/vxkhtwPH/2b0392e3f399.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo36','https://i.ibb.co/vxkhtwPH/2b0392e3f399.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/Gb44tCQ/99dadd08ed85.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo36','https://i.ibb.co/Gb44tCQ/99dadd08ed85.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(36)">Opuntia elata &#x27;Gruesa&#x27;</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">2.000 ARS</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Opuntia%20elata%20%27Gruesa%27%20%28c%C3%B3digo%20OPELG-N8-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="E F" data-nombre="austrocylindropuntia subulata">
+      <div class="foto-wrap" onclick="abrirModal(37)">
+        <img id="foto-grupo37" src="https://i.ibb.co/fYFPbCsp/8643e4f208df.jpg" alt="Austrocylindropuntia subulata" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/fYFPbCsp/8643e4f208df.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo37','https://i.ibb.co/fYFPbCsp/8643e4f208df.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/7dvDZy3J/24c07180e674.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo37','https://i.ibb.co/7dvDZy3J/24c07180e674.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/Mk0Q8gtQ/fba037f5ebac.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo37','https://i.ibb.co/Mk0Q8gtQ/fba037f5ebac.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(37)">Austrocylindropuntia subulata</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">2.000 ARS</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Austrocylindropuntia%20subulata%20%28c%C3%B3digo%20AOPS-N8-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="E F" data-nombre="echinopsis aurea var. shaferi">
+      <div class="foto-wrap" onclick="abrirModal(38)">
+        <img id="foto-grupo38" src="https://i.ibb.co/84rWKGGy/3946f7869543.jpg" alt="Echinopsis aurea var. shaferi" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/84rWKGGy/3946f7869543.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo38','https://i.ibb.co/84rWKGGy/3946f7869543.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/21pCn87c/eac63014bb76.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo38','https://i.ibb.co/21pCn87c/eac63014bb76.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/0RsLhGvt/2a05045669d0.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo38','https://i.ibb.co/0RsLhGvt/2a05045669d0.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(38)">Echinopsis aurea var. shaferi</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">3.000 – 4.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(38)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="B C D" data-nombre="raphis">
+      <div class="foto-wrap" onclick="abrirModal(39)">
+        <img id="foto-grupo39" src="https://i.ibb.co/rfLJVVTS/e93a9e867e66.jpg" alt="Raphis" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/rfLJVVTS/e93a9e867e66.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo39','https://i.ibb.co/rfLJVVTS/e93a9e867e66.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/Lh6g4bBt/22b64cda6011.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo39','https://i.ibb.co/Lh6g4bBt/22b64cda6011.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/994cQMPc/5018f18e1cee.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo39','https://i.ibb.co/994cQMPc/5018f18e1cee.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(39)">Raphis</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">10.000 – 18.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(39)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="D E F" data-nombre="cycas revoluta">
+      <div class="foto-wrap" onclick="abrirModal(40)">
+        <img id="foto-grupo40" src="https://i.ibb.co/kVYrxY30/220b793df055.jpg" alt="Cycas revoluta" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/kVYrxY30/220b793df055.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo40','https://i.ibb.co/kVYrxY30/220b793df055.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/NdsDLS8z/8c3376bf5280.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo40','https://i.ibb.co/NdsDLS8z/8c3376bf5280.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/ccFz67d0/fb8e85388ce2.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo40','https://i.ibb.co/ccFz67d0/fb8e85388ce2.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/6fvNkqn/faf7c65814a1.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo40','https://i.ibb.co/6fvNkqn/faf7c65814a1.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(40)">Cycas revoluta</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">70.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(40)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="E F" data-nombre="pitanga / eugenia uniflora">
+      <div class="foto-wrap" onclick="abrirModal(41)">
+        <img id="foto-grupo41" src="https://i.ibb.co/Lzc256km/21da7e2cc799.jpg" alt="Pitanga / Eugenia uniflora" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/Lzc256km/21da7e2cc799.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo41','https://i.ibb.co/Lzc256km/21da7e2cc799.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/gbWMW5BD/11a796faa700.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo41','https://i.ibb.co/gbWMW5BD/11a796faa700.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/KxsZbRnD/f827099d3c27.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo41','https://i.ibb.co/KxsZbRnD/f827099d3c27.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/r2dRyZH9/22d6e4b24550.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo41','https://i.ibb.co/r2dRyZH9/22d6e4b24550.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/Z63wHgmH/07cddea93add.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo41','https://i.ibb.co/Z63wHgmH/07cddea93add.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/ZR5skthW/cd237a5a2b54.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo41','https://i.ibb.co/ZR5skthW/cd237a5a2b54.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(41)">Pitanga / Eugenia uniflora</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">30.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(41)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="E F" data-nombre="níspero / eriobotrya japonica">
+      <div class="foto-wrap" onclick="abrirModal(42)">
+        <img id="foto-grupo42" src="https://i.ibb.co/DfLzX31J/df7138cf86d3.jpg" alt="Níspero / Eriobotrya japonica" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/DfLzX31J/df7138cf86d3.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo42','https://i.ibb.co/DfLzX31J/df7138cf86d3.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/23w7TPF0/c1e9553f5685.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo42','https://i.ibb.co/23w7TPF0/c1e9553f5685.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/9kJV4fV1/a7e435dd425b.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo42','https://i.ibb.co/9kJV4fV1/a7e435dd425b.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/bjSzQqnh/0e0e653558f1.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo42','https://i.ibb.co/bjSzQqnh/0e0e653558f1.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/5x6GHFzd/f899818c382b.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo42','https://i.ibb.co/5x6GHFzd/f899818c382b.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(42)">Níspero / Eriobotrya japonica</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">10.000 ARS</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20N%C3%ADspero%20/%20Eriobotrya%20japonica%20%28c%C3%B3digo%20NIS-5L-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="E F" data-nombre="rosa pitiminí / miniatura / rococó rosa">
+      <div class="foto-wrap" onclick="abrirModal(43)">
+        <img id="foto-grupo43" src="https://i.ibb.co/WpGdhBD4/73995a66befd.jpg" alt="Rosa pitiminí / miniatura / rococó rosa" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/WpGdhBD4/73995a66befd.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo43','https://i.ibb.co/WpGdhBD4/73995a66befd.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/YT7C324v/a1c93a434b8c.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo43','https://i.ibb.co/YT7C324v/a1c93a434b8c.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/ffGC86C/734bf4a87767.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo43','https://i.ibb.co/ffGC86C/734bf4a87767.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/99w7qqzX/7fff9cde1bf3.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo43','https://i.ibb.co/99w7qqzX/7fff9cde1bf3.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/B5L7zNYs/496cf80a373c.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo43','https://i.ibb.co/B5L7zNYs/496cf80a373c.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(43)">Rosa pitiminí / miniatura / rococó rosa</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">12.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(43)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="E F" data-nombre="crassula capitella ‘campfire’">
+      <div class="foto-wrap" onclick="abrirModal(44)">
+        <img id="foto-grupo44" src="https://i.ibb.co/329kQBj/e60e80874ccd.jpg" alt="Crassula capitella ‘Campfire’" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/329kQBj/e60e80874ccd.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo44','https://i.ibb.co/329kQBj/e60e80874ccd.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/MxHm5KFf/9c578c4dbd3c.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo44','https://i.ibb.co/MxHm5KFf/9c578c4dbd3c.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/vv40JrJx/378c2c462981.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo44','https://i.ibb.co/vv40JrJx/378c2c462981.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/nq8M5mkH/0a4507b30242.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo44','https://i.ibb.co/nq8M5mkH/0a4507b30242.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/k6KWPQPy/9824134d80d9.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo44','https://i.ibb.co/k6KWPQPy/9824134d80d9.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(44)">Crassula capitella ‘Campfire’</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">3.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(44)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="D E F" data-nombre="crassula ovata / árbol de jade">
+      <div class="foto-wrap" onclick="abrirModal(45)">
+        <img id="foto-grupo45" src="https://i.ibb.co/Jj3xdGn0/b9cdc547ea5a.jpg" alt="Crassula ovata / Árbol de jade" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/Jj3xdGn0/b9cdc547ea5a.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo45','https://i.ibb.co/Jj3xdGn0/b9cdc547ea5a.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/QFVdrXWg/dc8f2110dd2d.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo45','https://i.ibb.co/QFVdrXWg/dc8f2110dd2d.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/ZppSzWvY/cc53932cdf42.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo45','https://i.ibb.co/ZppSzWvY/cc53932cdf42.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/rfbPYD28/1a847aaa2b41.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo45','https://i.ibb.co/rfbPYD28/1a847aaa2b41.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(45)">Crassula ovata / Árbol de jade</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">5.000 – 10.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(45)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="E F" data-nombre="burrito / cedrón paraguayo / aloysia polystachya">
+      <div class="foto-wrap" onclick="abrirModal(46)">
+        <img id="foto-grupo46" src="https://i.ibb.co/bgdXbstQ/8c086d3742a0.jpg" alt="Burrito / Cedrón paraguayo / Aloysia polystachya" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/bgdXbstQ/8c086d3742a0.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo46','https://i.ibb.co/bgdXbstQ/8c086d3742a0.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/5Wg17Pp3/e676f2c901d2.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo46','https://i.ibb.co/5Wg17Pp3/e676f2c901d2.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/qLQGVqjf/cd24b67830c3.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo46','https://i.ibb.co/qLQGVqjf/cd24b67830c3.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/S457XBHR/e9dd55b66e8e.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo46','https://i.ibb.co/S457XBHR/e9dd55b66e8e.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(46)">Burrito / Cedrón paraguayo / Aloysia polystachya</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">3.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(46)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="A B C" data-nombre="curculigo capitulata / palma de sombra">
+      <div class="foto-wrap" onclick="abrirModal(47)">
+        <img id="foto-grupo47" src="https://i.ibb.co/Ndbgv0sb/1576a157c99c.jpg" alt="Curculigo capitulata / palma de sombra" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/Ndbgv0sb/1576a157c99c.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo47','https://i.ibb.co/Ndbgv0sb/1576a157c99c.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/DHpL54qF/6dfcc6e393d9.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo47','https://i.ibb.co/DHpL54qF/6dfcc6e393d9.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/WNFwgk9Q/d17be498aec0.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo47','https://i.ibb.co/WNFwgk9Q/d17be498aec0.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/chd21nn5/02e575badb0c.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo47','https://i.ibb.co/chd21nn5/02e575badb0c.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/F4Lv3s1T/ddd6d4272a55.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo47','https://i.ibb.co/F4Lv3s1T/ddd6d4272a55.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(47)">Curculigo capitulata / palma de sombra</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">14.000 ARS</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Curculigo%20capitulata%20/%20palma%20de%20sombra%20%28c%C3%B3digo%20CURC-N18-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="E F" data-nombre="aeonium haworthii / bejequillo tinerfeño">
+      <div class="foto-wrap" onclick="abrirModal(48)">
+        <img id="foto-grupo48" src="https://i.ibb.co/CsVcmQWH/9a2b39288a49.jpg" alt="Aeonium haworthii / bejequillo tinerfeño" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/CsVcmQWH/9a2b39288a49.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo48','https://i.ibb.co/CsVcmQWH/9a2b39288a49.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/Ngt940CX/12f7a64bab54.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo48','https://i.ibb.co/Ngt940CX/12f7a64bab54.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/bMQcKgNy/4b43b965763e.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo48','https://i.ibb.co/bMQcKgNy/4b43b965763e.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(48)">Aeonium haworthii / bejequillo tinerfeño</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">6.000 – 8.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(48)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="D E" data-nombre="gymnocalycium anisitsii">
+      <div class="foto-wrap" onclick="abrirModal(49)">
+        <img id="foto-grupo49" src="https://i.ibb.co/VY3rkvrF/a1b9c541258c.jpg" alt="Gymnocalycium anisitsii" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/VY3rkvrF/a1b9c541258c.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo49','https://i.ibb.co/VY3rkvrF/a1b9c541258c.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/7JkwCQxq/fae086ada996.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo49','https://i.ibb.co/7JkwCQxq/fae086ada996.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/pvf67BHP/631d0c788c8d.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo49','https://i.ibb.co/pvf67BHP/631d0c788c8d.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(49)">Gymnocalycium anisitsii</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">2.500 ARS</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Gymnocalycium%20anisitsii%20%28c%C3%B3digo%20GYMA-N8-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="F" data-nombre="erythrina crista-galli / ceibo">
+      <div class="foto-wrap" onclick="abrirModal(50)">
+        <img id="foto-grupo50" src="https://i.ibb.co/gFjfRJ1X/c6f69abf9afe.jpg" alt="Erythrina crista-galli / Ceibo" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/gFjfRJ1X/c6f69abf9afe.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo50','https://i.ibb.co/gFjfRJ1X/c6f69abf9afe.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/5XGzY6dr/3dde47ba1e30.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo50','https://i.ibb.co/5XGzY6dr/3dde47ba1e30.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/HpFSMwkx/cc62d66735dc.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo50','https://i.ibb.co/HpFSMwkx/cc62d66735dc.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/JWs6bmdm/b7d82dc4dae6.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo50','https://i.ibb.co/JWs6bmdm/b7d82dc4dae6.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/DfrXHy51/e2d7ef9b3ade.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo50','https://i.ibb.co/DfrXHy51/e2d7ef9b3ade.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(50)">Erythrina crista-galli / Ceibo</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">12.000 – 22.000 ARS</span></div>
+        <button class="boton-wa" onclick="abrirModal(50)">Ver tamaños</button>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="C D" data-nombre="amarilis (hippeastrum × hybridum &#x27;clown&#x27;)">
+      <div class="foto-wrap" onclick="abrirModal(51)">
+        <img id="foto-grupo51" src="https://i.ibb.co/gFfq1V6S/38a35cbdf971.jpg" alt="Amarilis (Hippeastrum × hybridum &#x27;Clown&#x27;)" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/gFfq1V6S/38a35cbdf971.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo51','https://i.ibb.co/gFfq1V6S/38a35cbdf971.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/nsSpkMfK/c8b6dc1a18a3.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo51','https://i.ibb.co/nsSpkMfK/c8b6dc1a18a3.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/w18j35r/87e9702e33d8.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo51','https://i.ibb.co/w18j35r/87e9702e33d8.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(51)">Amarilis (Hippeastrum × hybridum &#x27;Clown&#x27;)</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">5.000 ARS</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Amarilis%20%28Hippeastrum%20%C3%97%20hybridum%20%27Clown%27%29%20%28c%C3%B3digo%20HAMA-5L-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </article>
+    
+
+    <article class="tarjeta" data-categorias="F" data-nombre="manzano">
+      <div class="foto-wrap" onclick="abrirModal(52)">
+        <img id="foto-grupo52" src="https://i.ibb.co/kVzz4w9v/8f8f9dd163eb.jpg" alt="Manzano" loading="lazy">
+        <span class="etiqueta-tallo"></span>
+      </div>
+      <div class="miniaturas"><button class="mini" style="background-image:url('https://i.ibb.co/kVzz4w9v/8f8f9dd163eb.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo52','https://i.ibb.co/kVzz4w9v/8f8f9dd163eb.jpg')"></button><button class="mini" style="background-image:url('https://i.ibb.co/kWSf0yf/d869e76c0efe.jpg')" onclick="event.stopPropagation(); cambiarFoto(this,'grupo52','https://i.ibb.co/kWSf0yf/d869e76c0efe.jpg')"></button></div>
+      <div class="info">
+        <h3 onclick="abrirModal(52)">Manzano</h3>
+        <p class="desc"></p>
+        <div class="precio-linea"><span class="precio">20.000 ARS</span></div>
+        <a class="boton-wa" href="https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Manzano%20%28c%C3%B3digo%20MANZ-20L-01%29" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </article>
+    
+    <p class="sin-resultados" id="sinResultados">No encontramos ninguna planta con ese nombre.</p>
   </main>
   <footer>
     Tocá "Consultar por WhatsApp" en cualquier planta para preguntar por precio, stock o coordinar la entrega.
@@ -382,6 +1192,7 @@
       </div>
       <div class="modal-info">
         <h2 id="modalTitulo"></h2>
+        <div class="modal-tamanos" id="modalTamanos"></div>
         <div class="modal-miniaturas" id="modalMiniaturas"></div>
         <p class="modal-desc" id="modalDesc"></p>
         <div class="modal-precio" id="modalPrecio"></div>
@@ -396,9 +1207,11 @@
   </div>
 
   <script>
-    const productos = [{"titulo": "Begonia maculata", "descripcion": "🌿 Planta exótica – decorativa – begonia\n\n☀️ Luz: Hojas moteadas, muy vistosa.\n💧 Riego moderado. No mojar las hojas al regar, para evitar hongos\n📏 Tamaño de maceta: Grande - N21 \n\n📍 Rosario y alrededores · 💬 Consultas por este medio", "fotos": ["https://i.ibb.co/YT0xgR5h/6903f5b3aebe.jpg", "https://i.ibb.co/hFFP2Tn0/d9e62bcd4937.jpg"], "precioHtml": "<span class=\"precio\">25000 ARS<\/span>", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Begonia%20maculata%20%28c%C3%B3digo%20BEG-N21-01%29"}, {"titulo": "Neomarica gracilis / Lirio caminante", "descripcion": "🌿 \n\n☀️ Luz: Follaje elegante, flores delicadas.\n💧 Riego moderado. Prefiere tierra apenas húmeda, sin encharcar\n📏 Tamaño de maceta: Chico - N14 \n\n📍 Rosario y alrededores · 💬 Consultas por este medio", "fotos": ["https://i.ibb.co/39m6gVKC/13b90c26006c.jpg"], "precioHtml": "<span class=\"precio\">7000 ARS<\/span>", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Neomarica%20gracilis%20/%20Lirio%20caminante%20%28c%C3%B3digo%20NEOG-N14-01%29"}, {"titulo": "Planta del dinero / Plectranthus verticillatus", "descripcion": "🌿 \n\n☀️ Luz: Crecimiento rápido, planta colgante.\n💧 Riego moderado. Riego regular, sin encharcar\n📏 Tamaño de maceta: Medio - N18 \n\n📍 Rosario y alrededores · 💬 Consultas por este medio", "fotos": ["https://i.ibb.co/PswvVCDs/596920fcab54.jpg", "https://i.ibb.co/kVCvvP6p/26fe4a072233.jpg", "https://i.ibb.co/Hwn5XKG/bbe4e495bd3f.jpg"], "precioHtml": "<span class=\"precio\">17000 ARS<\/span>", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Planta%20del%20dinero%20/%20Plectranthus%20verticillatus%20%28c%C3%B3digo%20PLECV-N18-01%29"}];
+    const productos = [{"titulo": "Aspidistra elatior / Oreja de Burro", "variantes": [{"id": "ASP-N18-01", "tamano": "Medio - N18", "descripcion": "", "fotos": ["https://i.ibb.co/Y7TmTBXN/28f08c219145.jpg", "https://i.ibb.co/xqmr69qR/e97d47d8532b.jpg", "https://i.ibb.co/JRRbhXnj/4e58c7d53557.jpg"], "precioHtml": "<span class=\"precio\">10.000 ARS<\/span>", "precioNumero": 10000.0, "precioTexto": "10.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Aspidistra%20elatior%20/%20Oreja%20de%20Burro%20%28c%C3%B3digo%20ASP-N18-01%29", "categorias": ["A", "B"]}]}, {"titulo": "Ctenanthe setosa / Papel de música", "variantes": [{"id": "CTSE-N18-01", "tamano": "Medio - N18", "descripcion": "", "fotos": ["https://i.ibb.co/qLPLpq47/4f81b9e575d4.jpg", "https://i.ibb.co/60Gmf9Fz/8d231bd56eff.jpg", "https://i.ibb.co/8DNr1nYk/b487e7c0fed8.jpg"], "precioHtml": "<span class=\"precio\">14.000 ARS<\/span>", "precioNumero": 14000.0, "precioTexto": "14.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Ctenanthe%20setosa%20/%20Papel%20de%20m%C3%BAsica%20%28c%C3%B3digo%20CTSE-N18-01%29", "categorias": ["B", "C"]}, {"id": "CTSE-N18-02", "tamano": "Medio - N18", "descripcion": "", "fotos": ["https://i.ibb.co/nNvs0HsQ/c705f88073d2.jpg", "https://i.ibb.co/kgbKRqCr/8d2ff244eb4f.jpg"], "precioHtml": "<span class=\"precio\">14.000 ARS<\/span>", "precioNumero": 14000.0, "precioTexto": "14.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Ctenanthe%20setosa%20/%20Papel%20de%20m%C3%BAsica%20%28c%C3%B3digo%20CTSE-N18-02%29", "categorias": ["B", "C"]}, {"id": "CTSE-N18-03", "tamano": "Medio - N18", "descripcion": "", "fotos": ["https://i.ibb.co/M5B4M9Qp/8f57d8f84332.jpg", "https://i.ibb.co/MkQL7rN3/4f1cbb0225ea.jpg", "https://i.ibb.co/Tx6LN12x/0b36af70a2d6.jpg"], "precioHtml": "<span class=\"precio\">14.000 ARS<\/span>", "precioNumero": 14000.0, "precioTexto": "14.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Ctenanthe%20setosa%20/%20Papel%20de%20m%C3%BAsica%20%28c%C3%B3digo%20CTSE-N18-03%29", "categorias": ["B", "C"]}]}, {"titulo": "Peperomia serpens", "variantes": [{"id": "PAPS-N12-01", "tamano": "Chico - N12", "descripcion": "", "fotos": ["https://i.ibb.co/DgLghWpT/6ce96c47c470.jpg", "https://i.ibb.co/9RJZV27/0d29d22314e3.jpg", "https://i.ibb.co/1tD8Mfsr/b544211d31a5.jpg"], "precioHtml": "<span class=\"precio\">12.000 ARS<\/span>", "precioNumero": 12000.0, "precioTexto": "12.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Peperomia%20serpens%20%28c%C3%B3digo%20PAPS-N12-01%29", "categorias": ["B", "C"]}, {"id": "PAPS-N12-02", "tamano": "Chico - N12", "descripcion": "", "fotos": ["https://i.ibb.co/3Pg3X5k/3fdd14983c59.jpg", "https://i.ibb.co/tMMDDd5m/6cf37103b855.jpg", "https://i.ibb.co/Pv9Lcj78/28ea36379ffa.jpg", "https://i.ibb.co/Ldf87f7m/dff7581b5895.jpg"], "precioHtml": "<span class=\"precio\">12.000 ARS<\/span>", "precioNumero": 12000.0, "precioTexto": "12.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Peperomia%20serpens%20%28c%C3%B3digo%20PAPS-N12-02%29", "categorias": ["B", "C"]}]}, {"titulo": "Aglaonema modestum / siempreverde chino", "variantes": [{"id": "AGLM-N18-01", "tamano": "Medio - N18", "descripcion": "", "fotos": ["https://i.ibb.co/jv89fqTf/a996812b077b.jpg", "https://i.ibb.co/dwgvHb7t/48efd635f45a.jpg", "https://i.ibb.co/1fLjvMtC/e5a0b5657398.jpg", "https://i.ibb.co/twL4wk5x/7d195e54361b.jpg"], "precioHtml": "<span class=\"precio\">10.000 ARS<\/span>", "precioNumero": 10000.0, "precioTexto": "10.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Aglaonema%20modestum%20/%20siempreverde%20chino%20%28c%C3%B3digo%20AGLM-N18-01%29", "categorias": ["B", "C"]}, {"id": "AGLM-N18-02", "tamano": "Medio - N18", "descripcion": "", "fotos": ["https://i.ibb.co/wZVZTkcm/33a8ee1fe16a.jpg", "https://i.ibb.co/hJ2y6WL5/9f5ca3f1c3a7.jpg", "https://i.ibb.co/x8D33H6b/9fb37de47dd9.jpg", "https://i.ibb.co/twL4wk5x/7d195e54361b.jpg"], "precioHtml": "<span class=\"precio\">10.000 ARS<\/span>", "precioNumero": 10000.0, "precioTexto": "10.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Aglaonema%20modestum%20/%20siempreverde%20chino%20%28c%C3%B3digo%20AGLM-N18-02%29", "categorias": ["B", "C"]}]}, {"titulo": "Dracaena marginata", "variantes": [{"id": "DRMR-5L-01", "tamano": "Grande - 5L", "descripcion": "", "fotos": ["https://i.ibb.co/Mys6bYnt/1673cc25a416.jpg", "https://i.ibb.co/6R0VTzfm/8b331ad20969.jpg"], "precioHtml": "<span class=\"precio\">12.000 ARS<\/span>", "precioNumero": 12000.0, "precioTexto": "12.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Dracaena%20marginata%20%28c%C3%B3digo%20DRMR-5L-01%29", "categorias": ["C"]}, {"id": "DRMR-5L-02", "tamano": "Grande - 5L", "descripcion": "", "fotos": ["https://i.ibb.co/Gv6587g5/95f31cab5a45.jpg", "https://i.ibb.co/hJqp4T2S/d038f71175b1.jpg", "https://i.ibb.co/Y42Qnhzb/9f9f3d032b8b.jpg"], "precioHtml": "<span class=\"precio\">10.000 ARS<\/span>", "precioNumero": 10000.0, "precioTexto": "10.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Dracaena%20marginata%20%28c%C3%B3digo%20DRMR-5L-02%29", "categorias": ["C"]}, {"id": "DRMR-5L-04", "tamano": "Grande - 5L", "descripcion": "", "fotos": ["https://i.ibb.co/TqFtGxpy/17c32fd72eab.jpg", "https://i.ibb.co/8g1KpSCn/4d1a835813db.jpg", "https://i.ibb.co/rK4xv1j0/4eec5ff3e52b.jpg"], "precioHtml": "<span class=\"precio\">15.000 ARS<\/span>", "precioNumero": 15000.0, "precioTexto": "15.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Dracaena%20marginata%20%28c%C3%B3digo%20DRMR-5L-04%29", "categorias": ["C"]}]}, {"titulo": "Dracaena fragrans / Palo de agua", "variantes": [{"id": "DRFR-N18-01", "tamano": "Medio - N18", "descripcion": "", "fotos": ["https://i.ibb.co/ynPT2fmD/0040977860dd.jpg", "https://i.ibb.co/HTJJmPCx/bd7f2bea840f.jpg", "https://i.ibb.co/zT4g3RZj/a1898b61677c.jpg", "https://i.ibb.co/60bLFc3r/4254ec9a5918.jpg"], "precioHtml": "<span class=\"precio\">15.000 ARS<\/span>", "precioNumero": 15000.0, "precioTexto": "15.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Dracaena%20fragrans%20/%20Palo%20de%20agua%20%28c%C3%B3digo%20DRFR-N18-01%29", "categorias": ["B", "C"]}, {"id": "DRFR-N18-02", "tamano": "Medio - N18", "descripcion": "", "fotos": ["https://i.ibb.co/JWTGjsVk/c9d8e45e5208.jpg", "https://i.ibb.co/FqWpMBVW/443b08d118fd.jpg", "https://i.ibb.co/B5dCFRg1/2d4978fd197d.jpg", "https://i.ibb.co/nqMMxYXV/f1785cb103b3.jpg", "https://i.ibb.co/60bLFc3r/4254ec9a5918.jpg"], "precioHtml": "<span class=\"precio\">20.000 ARS<\/span>", "precioNumero": 20000.0, "precioTexto": "20.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Dracaena%20fragrans%20/%20Palo%20de%20agua%20%28c%C3%B3digo%20DRFR-N18-02%29", "categorias": ["B", "C"]}, {"id": "DRFR-N21-01", "tamano": "Grande - N21", "descripcion": "", "fotos": ["https://i.ibb.co/rTfD1Pc/486eeb0a8938.jpg", "https://i.ibb.co/1fNLNq5g/0da2acb637d0.jpg", "https://i.ibb.co/9mPGW0JT/bbeac1e8edbd.jpg", "https://i.ibb.co/4gtnb0Xf/380df2b4bc16.jpg", "https://i.ibb.co/60bLFc3r/4254ec9a5918.jpg"], "precioHtml": "<span class=\"precio\">30.000 ARS<\/span>", "precioNumero": 30000.0, "precioTexto": "30.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Dracaena%20fragrans%20/%20Palo%20de%20agua%20%28c%C3%B3digo%20DRFR-N21-01%29", "categorias": ["B", "C"]}]}, {"titulo": "Sansevieria trifasciata 'Black Coral' / Dracaena trifasciata / Lengua de suegra", "variantes": [{"id": "SANB-N8-02", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/XZTcYVHd/70b5cc014829.jpg", "https://i.ibb.co/XfsKCwv8/95052269e931.jpg", "https://i.ibb.co/V0shmrWy/4cb390eeaf66.jpg", "https://i.ibb.co/xth8TdMH/7e68353c6ab2.jpg"], "precioHtml": "<span class=\"precio\">4.000 ARS<\/span>", "precioNumero": 4000.0, "precioTexto": "4.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Sansevieria%20trifasciata%20%27Black%20Coral%27%20/%20Dracaena%20trifasciata%20/%20Lengua%20de%20suegra%20%28c%C3%B3digo%20SANB-N8-02%29", "categorias": ["A", "B", "C"]}]}, {"titulo": "Singonio / Syngonium / Planta flecha", "variantes": [{"id": "SYN-N12-01", "tamano": "Chico - N12", "descripcion": "", "fotos": ["https://i.ibb.co/x8H3tzBf/0c2e5c42ce57.jpg", "https://i.ibb.co/9m5WvYnp/1474256af74b.jpg", "https://i.ibb.co/twbkgRB1/76330ebf3ad3.jpg"], "precioHtml": "<span class=\"precio\">8.000 ARS<\/span>", "precioNumero": 8000.0, "precioTexto": "8.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Singonio%20/%20Syngonium%20/%20Planta%20flecha%20%28c%C3%B3digo%20SYN-N12-01%29", "categorias": ["B", "C"]}, {"id": "SYN-N14-01", "tamano": "Chico - N14", "descripcion": "", "fotos": ["https://i.ibb.co/39JY9pcY/6221dc5b630a.jpg", "https://i.ibb.co/sdVBVfzD/8a3f6dc19264.jpg", "https://i.ibb.co/hxchNWrh/a192225bf95d.jpg"], "precioHtml": "<span class=\"precio\">10.000 ARS<\/span>", "precioNumero": 10000.0, "precioTexto": "10.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Singonio%20/%20Syngonium%20/%20Planta%20flecha%20%28c%C3%B3digo%20SYN-N14-01%29", "categorias": ["B", "C"]}, {"id": "SYN-N18-01", "tamano": "Medio - N18", "descripcion": "", "fotos": ["https://i.ibb.co/WWPwQFrr/9d8e79da89f7.jpg", "https://i.ibb.co/9my7gYDp/5d564fcfab90.jpg", "https://i.ibb.co/Y4rBRdhz/3dab8d07ce0b.jpg"], "precioHtml": "<span class=\"precio\">18.000 ARS<\/span>", "precioNumero": 18000.0, "precioTexto": "18.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Singonio%20/%20Syngonium%20/%20Planta%20flecha%20%28c%C3%B3digo%20SYN-N18-01%29", "categorias": ["B", "C"]}, {"id": "SYN-N21-01", "tamano": "Grande - N21", "descripcion": "", "fotos": ["https://i.ibb.co/Wp7kv62Z/b638e00b57f1.jpg", "https://i.ibb.co/Nn25WFCm/d8cf49864d7f.jpg", "https://i.ibb.co/Y6G689z/e2095eecc5f3.jpg", "https://i.ibb.co/9kxgF93b/6d015ace246f.jpg"], "precioHtml": "<span class=\"precio\">20.000 ARS<\/span>", "precioNumero": 20000.0, "precioTexto": "20.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Singonio%20/%20Syngonium%20/%20Planta%20flecha%20%28c%C3%B3digo%20SYN-N21-01%29", "categorias": ["B", "C"]}]}, {"titulo": "Begonia maculata", "variantes": [{"id": "BEG-N14-01", "tamano": "Chico - N14", "descripcion": "", "fotos": ["https://i.ibb.co/ZRWsxMZQ/0e6087ffd096.jpg", "https://i.ibb.co/G4ZvvSd5/bcd259519ff0.jpg", "https://i.ibb.co/GvWbscjB/ea2b67d0c31a.jpg", "https://i.ibb.co/cS2B3Sth/e035b956a875.jpg"], "precioHtml": "<span class=\"precio\">15.000 ARS<\/span>", "precioNumero": 15000.0, "precioTexto": "15.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Begonia%20maculata%20%28c%C3%B3digo%20BEG-N14-01%29", "categorias": ["C"]}, {"id": "BEG-N21-01", "tamano": "Grande - N21", "descripcion": "", "fotos": ["https://i.ibb.co/R4d8Tmsn/511080b6ef03.jpg", "https://i.ibb.co/Jw8bpytG/c2cd6646ca16.jpg", "https://i.ibb.co/5XXrLh0Q/be8d456fc32f.jpg", "https://i.ibb.co/hF89M2F8/7c23f645e6dd.jpg", "https://i.ibb.co/KcR8RbY7/e29962a4be50.jpg", "https://i.ibb.co/cS2B3Sth/e035b956a875.jpg"], "precioHtml": "<span class=\"precio\">25.000 ARS<\/span>", "precioNumero": 25000.0, "precioTexto": "25.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Begonia%20maculata%20%28c%C3%B3digo%20BEG-N21-01%29", "categorias": ["C"]}]}, {"titulo": "Neomarica gracilis / Lirio caminante", "variantes": [{"id": "NEOG-N8-01", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/Y7Pv4DGZ/44f8a2d62303.jpg", "https://i.ibb.co/fdcqZy6Y/f41745814e1e.jpg", "https://i.ibb.co/RGWBfvT6/1c57182d5830.jpg", "https://i.ibb.co/nNrBJnzS/f13425b6e9ee.jpg", "https://i.ibb.co/DHqf5xd0/efe95aca78ff.jpg", "https://i.ibb.co/NdhfmSSk/9b6c218bc7a2.jpg"], "precioHtml": "<span class=\"precio\">4.000 ARS<\/span>", "precioNumero": 4000.0, "precioTexto": "4.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Neomarica%20gracilis%20/%20Lirio%20caminante%20%28c%C3%B3digo%20NEOG-N8-01%29", "categorias": ["C", "D"]}, {"id": "NEOG-N14-01", "tamano": "Chico - N14", "descripcion": "", "fotos": ["https://i.ibb.co/yFWZVVgb/452f9d403d91.jpg", "https://i.ibb.co/cSbhCvXL/0bda613b9ecb.jpg", "https://i.ibb.co/PZZzC1d0/8e54d7775152.jpg", "https://i.ibb.co/nNrBJnzS/f13425b6e9ee.jpg", "https://i.ibb.co/DHqf5xd0/efe95aca78ff.jpg", "https://i.ibb.co/NdhfmSSk/9b6c218bc7a2.jpg"], "precioHtml": "<span class=\"precio\">7.000 ARS<\/span>", "precioNumero": 7000.0, "precioTexto": "7.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Neomarica%20gracilis%20/%20Lirio%20caminante%20%28c%C3%B3digo%20NEOG-N14-01%29", "categorias": ["C", "D"]}, {"id": "NEOG-N18-01", "tamano": "Medio - N18", "descripcion": "", "fotos": ["https://i.ibb.co/r2sLrftf/558b04304646.jpg", "https://i.ibb.co/ch4FJdkD/599c427343a3.jpg", "https://i.ibb.co/QFGFMp6z/5b94b84c52a0.jpg", "https://i.ibb.co/pvg5hd5j/8a83e4859bde.jpg", "https://i.ibb.co/nNrBJnzS/f13425b6e9ee.jpg", "https://i.ibb.co/DHqf5xd0/efe95aca78ff.jpg", "https://i.ibb.co/NdhfmSSk/9b6c218bc7a2.jpg"], "precioHtml": "<span class=\"precio\">9.000 ARS<\/span>", "precioNumero": 9000.0, "precioTexto": "9.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Neomarica%20gracilis%20/%20Lirio%20caminante%20%28c%C3%B3digo%20NEOG-N18-01%29", "categorias": ["C", "D"]}]}, {"titulo": "Potus / Epipremnum aureum", "variantes": [{"id": "POT-B18-01", "tamano": "Medio - B18", "descripcion": "", "fotos": ["https://i.ibb.co/Z1SLtbM8/c790d73b2a91.jpg", "https://i.ibb.co/R4Nwh27w/2016af6f21f9.jpg", "https://i.ibb.co/6JcR0zzC/d788fedb2353.jpg"], "precioHtml": "<span class=\"precio\">14.000 ARS<\/span>", "precioNumero": 14000.0, "precioTexto": "14.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Potus%20/%20Epipremnum%20aureum%20%28c%C3%B3digo%20POT-B18-01%29", "categorias": ["B", "C", "D"]}, {"id": "POT-5L-02", "tamano": "Grande - 5L -", "descripcion": "", "fotos": ["https://i.ibb.co/WvkvwRdp/534daf7c87a4.jpg", "https://i.ibb.co/4wsSMLp8/d1b9a0e2418b.jpg", "https://i.ibb.co/bhpH3Ym/c2b887fc4c5d.jpg", "https://i.ibb.co/TMKs0Y4j/a7fedd3fdea9.jpg", "https://i.ibb.co/YBwMmVBV/c374695bca39.jpg"], "precioHtml": "<span class=\"precio\">24.000 ARS<\/span>", "precioNumero": 24000.0, "precioTexto": "24.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Potus%20/%20Epipremnum%20aureum%20%28c%C3%B3digo%20POT-5L-02%29", "categorias": ["B", "C", "D"]}, {"id": "POT-5L-03", "tamano": "Grande - 5L -", "descripcion": "", "fotos": ["https://i.ibb.co/7NpzLcF4/cd7a2020b8d4.jpg", "https://i.ibb.co/MxVr3wcz/a002c5519701.jpg"], "precioHtml": "<span class=\"precio\">12.000 ARS<\/span>", "precioNumero": 12000.0, "precioTexto": "12.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Potus%20/%20Epipremnum%20aureum%20%28c%C3%B3digo%20POT-5L-03%29", "categorias": ["B", "C", "D"]}]}, {"titulo": "Callisia repens", "variantes": [{"id": "CALR-N8-01", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/bMkNwkYz/e6364b20eac3.jpg", "https://i.ibb.co/rKt64j6w/783eaed6136e.jpg", "https://i.ibb.co/1fcgTBVp/932d4ba622f0.jpg"], "precioHtml": "<span class=\"precio\">3.000 ARS<\/span>", "precioNumero": 3000.0, "precioTexto": "3.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Callisia%20repens%20%28c%C3%B3digo%20CALR-N8-01%29", "categorias": ["C", "D"]}]}, {"titulo": "Planta canasta / Callisia fragrans", "variantes": [{"id": "CALF-B18-01", "tamano": "Medio - B18", "descripcion": "", "fotos": ["https://i.ibb.co/9Hbt0WdP/a7b0334b8810.jpg", "https://i.ibb.co/XrqFmtXB/7eef971ba54a.jpg", "https://i.ibb.co/v60K8HQL/72862f671d6d.jpg", "https://i.ibb.co/DD6dPH2v/5aeca05bc60e.jpg"], "precioHtml": "<span class=\"precio\">12.000 ARS<\/span>", "precioNumero": 12000.0, "precioTexto": "12.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Planta%20canasta%20/%20Callisia%20fragrans%20%28c%C3%B3digo%20CALF-B18-01%29", "categorias": ["C", "D"]}]}, {"titulo": "Tradescantia sillamontana", "variantes": [{"id": "TRAS-N8-01", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/h1Mjcvss/04fd11f36163.jpg", "https://i.ibb.co/8L5Xhc9c/66cb8ee4ad05.jpg", "https://i.ibb.co/KcDb73kZ/abdc4e3c3ec1.jpg", "https://i.ibb.co/G4R6wKMW/ebbf18afbdcd.jpg"], "precioHtml": "<span class=\"precio\">3.500 ARS<\/span>", "precioNumero": 3500.0, "precioTexto": "3.500 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Tradescantia%20sillamontana%20%28c%C3%B3digo%20TRAS-N8-01%29", "categorias": ["D", "E"]}, {"id": "TRAS-N12-01", "tamano": "Chico - N12", "descripcion": "", "fotos": ["https://i.ibb.co/9mLPrMhr/cf545b4f56e5.jpg", "https://i.ibb.co/4wBnKknY/a3704e6b5c45.jpg", "https://i.ibb.co/h1Xy7Cz8/51cedad5435e.jpg", "https://i.ibb.co/G4R6wKMW/ebbf18afbdcd.jpg"], "precioHtml": "<span class=\"precio\">5.000 ARS<\/span>", "precioNumero": 5000.0, "precioTexto": "5.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Tradescantia%20sillamontana%20%28c%C3%B3digo%20TRAS-N12-01%29", "categorias": ["D", "E"]}, {"id": "TRAS-B18-01", "tamano": "Medio - B18", "descripcion": "", "fotos": ["https://i.ibb.co/0jQ0JKnr/aa545fb1bbce.jpg", "https://i.ibb.co/XxDs4wjs/2097c7d1879c.jpg", "https://i.ibb.co/67sTKbfM/0ec5567a27fa.jpg", "https://i.ibb.co/G4R6wKMW/ebbf18afbdcd.jpg"], "precioHtml": "<span class=\"precio\">9.000 ARS<\/span>", "precioNumero": 9000.0, "precioTexto": "9.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Tradescantia%20sillamontana%20%28c%C3%B3digo%20TRAS-B18-01%29", "categorias": ["D", "E"]}]}, {"titulo": "Helecho espárrago / Asparagus densiflorus", "variantes": [{"id": "HELE-N12-01", "tamano": "Chico - N12", "descripcion": "", "fotos": ["https://i.ibb.co/JFdbqHZ1/539be15eaa7d.jpg", "https://i.ibb.co/xS8mLPB8/f4232648be0d.jpg", "https://i.ibb.co/6cTF82m9/ec3a7e8ff630.jpg", "https://i.ibb.co/Xf4yZJtx/6f32158c5081.jpg", "https://i.ibb.co/GvjYtcD1/bd1df49019b3.png"], "precioHtml": "<span class=\"precio\">5.000 ARS<\/span>", "precioNumero": 5000.0, "precioTexto": "5.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Helecho%20esp%C3%A1rrago%20/%20Asparagus%20densiflorus%20%28c%C3%B3digo%20HELE-N12-01%29", "categorias": ["C"]}]}, {"titulo": "Haworthia", "variantes": [{"id": "HAW-N8-01", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/PzTCPVN3/9688e8257b17.jpg", "https://i.ibb.co/GQyP3H0C/da4b75e4a90d.jpg", "https://i.ibb.co/396XjLL6/599faf5fe439.jpg", "https://i.ibb.co/HpM2wJrg/3a8227c9cb0f.jpg"], "precioHtml": "<span class=\"precio\">4.000 ARS<\/span>", "precioNumero": 4000.0, "precioTexto": "4.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Haworthia%20%28c%C3%B3digo%20HAW-N8-01%29", "categorias": ["D", "E"]}, {"id": "HAW-N12-01", "tamano": "Chico - N12", "descripcion": "", "fotos": ["https://i.ibb.co/DDqSCHQb/57a4508189c9.jpg", "https://i.ibb.co/fd353my5/ab906e338406.jpg", "https://i.ibb.co/Zp3zNPqy/e3dfe9b38138.jpg", "https://i.ibb.co/Vc6xzJKx/186421705999.jpg", "https://i.ibb.co/HpM2wJrg/3a8227c9cb0f.jpg"], "precioHtml": "<span class=\"precio\">10.000 ARS<\/span>", "precioNumero": 10000.0, "precioTexto": "10.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Haworthia%20%28c%C3%B3digo%20HAW-N12-01%29", "categorias": ["D", "E"]}]}, {"titulo": "Gasteria carinata var. verrucosa", "variantes": [{"id": "GAS-N18-01", "tamano": "Medio - N18", "descripcion": "", "fotos": ["https://i.ibb.co/R4dSLxcM/71298c1c2c4e.jpg", "https://i.ibb.co/tppKw7tQ/a0ee2a677efb.jpg", "https://i.ibb.co/6RbSJfJr/238dbb1bb36d.jpg", "https://i.ibb.co/0ygNGGz2/b8b6f68fa671.jpg", "https://i.ibb.co/0jBbdp4h/91f6e75c189c.jpg"], "precioHtml": "<span class=\"precio\">9.000 ARS<\/span>", "precioNumero": 9000.0, "precioTexto": "9.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Gasteria%20carinata%20var.%20verrucosa%20%28c%C3%B3digo%20GAS-N18-01%29", "categorias": ["D", "E"]}]}, {"titulo": "Lazo de amor / Chlorophytum comosum", "variantes": [{"id": "CHCO-N8-01", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/WNG4PxMd/a8dc80ff6d9b.jpg", "https://i.ibb.co/nM5jgYvQ/9e1816f7c9fb.jpg", "https://i.ibb.co/zHxTfxr7/038bd9c0ef8c.jpg", "https://i.ibb.co/HpqP3X9d/9fa3eed5408a.jpg"], "precioHtml": "<span class=\"precio\">3.000 ARS<\/span>", "precioNumero": 3000.0, "precioTexto": "3.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Lazo%20de%20amor%20/%20Chlorophytum%20comosum%20%28c%C3%B3digo%20CHCO-N8-01%29", "categorias": ["C", "D"]}, {"id": "CHCO-N18-01", "tamano": "Medio - N18", "descripcion": "", "fotos": ["https://i.ibb.co/vNZ7hks/f7dc4a2e3d20.jpg", "https://i.ibb.co/k2t3Ljfn/6dfc51c0c0f9.jpg", "https://i.ibb.co/pBLgyyzf/e7aebc317e2f.jpg", "https://i.ibb.co/HpqP3X9d/9fa3eed5408a.jpg"], "precioHtml": "<span class=\"precio\">10.000 ARS<\/span>", "precioNumero": 10000.0, "precioTexto": "10.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Lazo%20de%20amor%20/%20Chlorophytum%20comosum%20%28c%C3%B3digo%20CHCO-N18-01%29", "categorias": ["C", "D"]}, {"id": "CHCO-N18-02", "tamano": "Medio - N18", "descripcion": "", "fotos": ["https://i.ibb.co/B5c1VXhX/4b7804e2be98.jpg", "https://i.ibb.co/fRc5qWf/bd7f2e662698.jpg", "https://i.ibb.co/nqYPK6yk/8934adbd096d.jpg", "https://i.ibb.co/HpqP3X9d/9fa3eed5408a.jpg"], "precioHtml": "<span class=\"precio\">10.000 ARS<\/span>", "precioNumero": 10000.0, "precioTexto": "10.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Lazo%20de%20amor%20/%20Chlorophytum%20comosum%20%28c%C3%B3digo%20CHCO-N18-02%29", "categorias": ["C", "D"]}]}, {"titulo": "Planta del dinero / Plectranthus verticillatus", "variantes": [{"id": "PLECV-N18-01", "tamano": "Medio - N18", "descripcion": "", "fotos": ["https://i.ibb.co/HLdYBWd7/4b7a431dbf02.jpg", "https://i.ibb.co/YBcgj4RQ/dab2f7910c39.jpg", "https://i.ibb.co/kVPfkrHc/d0e53b10a1f4.jpg", "https://i.ibb.co/xqMP1L7g/ecf6fc6bf512.jpg"], "precioHtml": "<span class=\"precio\">17.000 ARS<\/span>", "precioNumero": 17000.0, "precioTexto": "17.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Planta%20del%20dinero%20/%20Plectranthus%20verticillatus%20%28c%C3%B3digo%20PLECV-N18-01%29", "categorias": ["C", "D"]}]}, {"titulo": "Cóleo / Coleus scutellarioides / Plectranthus scutellarioides", "variantes": [{"id": "COLE-N12-01", "tamano": "Chico - N12", "descripcion": "", "fotos": ["https://i.ibb.co/sp7Rjphy/cd76578b0f53.jpg", "https://i.ibb.co/Xh0pdKB/50a97c2ac88d.jpg", "https://i.ibb.co/qXSsRy8/b8849f59bd25.jpg"], "precioHtml": "<span class=\"precio\">5.000 ARS<\/span>", "precioNumero": 5000.0, "precioTexto": "5.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20C%C3%B3leo%20/%20Coleus%20scutellarioides%20/%20Plectranthus%20scutellarioides%20%28c%C3%B3digo%20COLE-N12-01%29", "categorias": ["C", "D"]}, {"id": "COLE-N12-02", "tamano": "Chico - N12", "descripcion": "", "fotos": ["https://i.ibb.co/2Q58pH8/ec06c34e0a82.jpg", "https://i.ibb.co/S4KXZ26m/0324bffd652b.jpg", "https://i.ibb.co/MDygHnKs/70607e43bd1e.jpg", "https://i.ibb.co/qXSsRy8/b8849f59bd25.jpg"], "precioHtml": "<span class=\"precio\">6.000 ARS<\/span>", "precioNumero": 6000.0, "precioTexto": "6.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20C%C3%B3leo%20/%20Coleus%20scutellarioides%20/%20Plectranthus%20scutellarioides%20%28c%C3%B3digo%20COLE-N12-02%29", "categorias": ["C", "D"]}]}, {"titulo": "Schlumbergera / Cactus de Navidad / Santa Teresita / Pata de Jaiba", "variantes": [{"id": "SCH-N8-01", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/dwr6vk8f/19e385f88d9a.jpg", "https://i.ibb.co/W4FTc8td/e97b53fbfdd5.jpg", "https://i.ibb.co/W4jt9DHp/cf480f9b7dd2.jpg", "https://i.ibb.co/Y7YvPkJJ/322154f1f134.jpg"], "precioHtml": "<span class=\"precio\">6.000 ARS<\/span>", "precioNumero": 6000.0, "precioTexto": "6.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Schlumbergera%20/%20Cactus%20de%20Navidad%20/%20Santa%20Teresita%20/%20Pata%20de%20Jaiba%20%28c%C3%B3digo%20SCH-N8-01%29", "categorias": ["C", "D"]}]}, {"titulo": "Epiphyllum oxypetalum / Reina de la noche", "variantes": [{"id": "EPIO-N12-01", "tamano": "Chico - N12", "descripcion": "", "fotos": ["https://i.ibb.co/SDTrbV6Z/d883dcbe9116.jpg", "https://i.ibb.co/PZ6VhdxF/872321c571f6.jpg", "https://i.ibb.co/CKg206nB/e37f75d086ae.jpg", "https://i.ibb.co/PsGyJ2wd/448269201af6.jpg", "https://i.ibb.co/Zz09SsLS/2d2945ba7f27.jpg", "https://i.ibb.co/8grVm4qc/ef1fa34757fc.jpg", "https://i.ibb.co/gb5KY38g/4ccab19450a1.jpg"], "precioHtml": "<span class=\"precio\">8.000 ARS<\/span>", "precioNumero": 8000.0, "precioTexto": "8.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Epiphyllum%20oxypetalum%20/%20Reina%20de%20la%20noche%20%28c%C3%B3digo%20EPIO-N12-01%29", "categorias": ["C", "D"]}, {"id": "EPIO-N12-02", "tamano": "Chico - N12", "descripcion": "", "fotos": ["https://i.ibb.co/FbCySkMD/277de573ddc5.jpg", "https://i.ibb.co/yBxHMLGj/b73bcee7c945.jpg", "https://i.ibb.co/kVXHmRhW/009ecd5aa20b.jpg", "https://i.ibb.co/Zz09SsLS/2d2945ba7f27.jpg", "https://i.ibb.co/8grVm4qc/ef1fa34757fc.jpg", "https://i.ibb.co/gb5KY38g/4ccab19450a1.jpg"], "precioHtml": "<span class=\"precio\">7.000 ARS<\/span>", "precioNumero": 7000.0, "precioTexto": "7.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Epiphyllum%20oxypetalum%20/%20Reina%20de%20la%20noche%20%28c%C3%B3digo%20EPIO-N12-02%29", "categorias": ["C", "D"]}]}, {"titulo": "Selenicereus undatus / Pitahaya", "variantes": [{"id": "SELU-N14-01", "tamano": "Chico - N14", "descripcion": "", "fotos": ["https://i.ibb.co/spMpQmGC/b6483f4e0c96.jpg", "https://i.ibb.co/LhBNdwtv/a451ac3d2c2b.jpg", "https://i.ibb.co/0vdtRks/4b967778a680.jpg", "https://i.ibb.co/v4DqC7LK/74646298da66.jpg", "https://i.ibb.co/gMDhzWRq/4a22543fcd75.jpg", "https://i.ibb.co/F44sPxTD/73c0e0cf2866.jpg", "https://i.ibb.co/8LKfWFzt/87a47fb329da.jpg", "https://i.ibb.co/vCJg6z1b/fdd16318fd8f.jpg"], "precioHtml": "<span class=\"precio\">5.000 ARS<\/span>", "precioNumero": 5000.0, "precioTexto": "5.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Selenicereus%20undatus%20/%20Pitahaya%20%28c%C3%B3digo%20SELU-N14-01%29", "categorias": ["E", "F"]}]}, {"titulo": "Selenicereus anthonyanus / Espina de pescado", "variantes": [{"id": "SELA-N18-01", "tamano": "Medio - N18", "descripcion": "", "fotos": ["https://i.ibb.co/35KW7M6M/8884ed23d762.jpg", "https://i.ibb.co/mCLHcZvS/ac3d7c2ce7f8.jpg", "https://i.ibb.co/96dJrcL/abecb8b4b9d6.jpg", "https://i.ibb.co/FL53tRs4/f0f79359c892.jpg", "https://i.ibb.co/5hJ29WqF/c17049e2e689.jpg"], "precioHtml": "<span class=\"precio\">15.000 ARS<\/span>", "precioNumero": 15000.0, "precioTexto": "15.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Selenicereus%20anthonyanus%20/%20Espina%20de%20pescado%20%28c%C3%B3digo%20SELA-N18-01%29", "categorias": ["C", "D"]}, {"id": "SELA-N12-01", "tamano": "Chico - N12", "descripcion": "", "fotos": ["https://i.ibb.co/fBVTzVk/511da12cd634.jpg", "https://i.ibb.co/pB7LRmRN/829a76c453d4.jpg", "https://i.ibb.co/v6vfjYhS/ce7b7eeefd19.jpg", "https://i.ibb.co/5hJ29WqF/c17049e2e689.jpg"], "precioHtml": "<span class=\"precio\">10.000 ARS<\/span>", "precioNumero": 10000.0, "precioTexto": "10.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Selenicereus%20anthonyanus%20/%20Espina%20de%20pescado%20%28c%C3%B3digo%20SELA-N12-01%29", "categorias": ["C", "D"]}, {"id": "SELA-N12-02", "tamano": "Chico - N12", "descripcion": "", "fotos": ["https://i.ibb.co/PGMbNKmD/e43bb4377a38.jpg", "https://i.ibb.co/KpFDYNks/ba04129fd6d9.jpg", "https://i.ibb.co/fYsZ6PVh/1358809714e2.jpg", "https://i.ibb.co/9kqdDGrH/391ef807cc97.jpg", "https://i.ibb.co/5hJ29WqF/c17049e2e689.jpg"], "precioHtml": "<span class=\"precio\">12.000 ARS<\/span>", "precioNumero": 12000.0, "precioTexto": "12.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Selenicereus%20anthonyanus%20/%20Espina%20de%20pescado%20%28c%C3%B3digo%20SELA-N12-02%29", "categorias": ["C", "D"]}]}, {"titulo": "Aptenia cordifolia 'Variegata' / Baby Sun Rose", "variantes": [{"id": "ACB-N12-01", "tamano": "Chico - N12", "descripcion": "", "fotos": ["https://i.ibb.co/v4rKvYVH/3c28db1a7501.jpg", "https://i.ibb.co/tpQzJQTh/c560a1af76f8.jpg", "https://i.ibb.co/DgQ0mhzs/8d9e6de78d85.jpg", "https://i.ibb.co/C5BGHwHT/e5ba6721f91e.jpg", "https://i.ibb.co/q3B7X4n1/f5c4c37aa905.jpg"], "precioHtml": "<span class=\"precio\">8.000 ARS<\/span>", "precioNumero": 8000.0, "precioTexto": "8.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Aptenia%20cordifolia%20%27Variegata%27%20/%20Baby%20Sun%20Rose%20%28c%C3%B3digo%20ACB-N12-01%29", "categorias": ["E", "F"]}]}, {"titulo": "Stapelia grandiflora 'flor roja'", "variantes": [{"id": "STAG-N8-01", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/fGvxs2gF/9f28229e3c53.jpg", "https://i.ibb.co/XrxxzcJv/cf5d4bd8b2cb.jpg", "https://i.ibb.co/xt6zsSHT/fbab89d16bd7.jpg", "https://i.ibb.co/hFWD8s8S/aaefbf0d3fa2.jpg"], "precioHtml": "<span class=\"precio\">3.000 ARS<\/span>", "precioNumero": 3000.0, "precioTexto": "3.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Stapelia%20grandiflora%20%27flor%20roja%27%20%28c%C3%B3digo%20STAG-N8-01%29", "categorias": ["D", "E"]}, {"id": "STAG-N8-02", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/czs7LHY/461781a84a45.jpg", "https://i.ibb.co/PzP4B6Yh/74f572bb392a.jpg", "https://i.ibb.co/dwHQxMkv/d4ce04f28a39.jpg", "https://i.ibb.co/hFWD8s8S/aaefbf0d3fa2.jpg"], "precioHtml": "<span class=\"precio\">3.500 ARS<\/span>", "precioNumero": 3500.0, "precioTexto": "3.500 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Stapelia%20grandiflora%20%27flor%20roja%27%20%28c%C3%B3digo%20STAG-N8-02%29", "categorias": ["D", "E"]}, {"id": "STAG-N12-01", "tamano": "Chico - N12", "descripcion": "", "fotos": ["https://i.ibb.co/C3Vd98qn/2735875dc5a5.jpg", "https://i.ibb.co/qMKgQKbG/8161086af9fa.jpg", "https://i.ibb.co/spBpBmNk/378a01952ef5.jpg", "https://i.ibb.co/hFWD8s8S/aaefbf0d3fa2.jpg"], "precioHtml": "<span class=\"precio\">5.000 ARS<\/span>", "precioNumero": 5000.0, "precioTexto": "5.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Stapelia%20grandiflora%20%27flor%20roja%27%20%28c%C3%B3digo%20STAG-N12-01%29", "categorias": ["D", "E"]}]}, {"titulo": "Stapelia variegata", "variantes": [{"id": "STAV-N8-01", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/Cp76LXj9/264cca2a0257.jpg", "https://i.ibb.co/8nz7B9r6/028af3aabc06.jpg", "https://i.ibb.co/B2B12h9s/097c7f06f9c2.jpg", "https://i.ibb.co/rRTChNkN/3f572622baac.jpg", "https://i.ibb.co/CKHKGJLK/f3db033624dd.jpg"], "precioHtml": "<span class=\"precio\">3.500 ARS<\/span>", "precioNumero": 3500.0, "precioTexto": "3.500 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Stapelia%20variegata%20%28c%C3%B3digo%20STAV-N8-01%29", "categorias": ["D", "E"]}, {"id": "STAV-N12-01", "tamano": "Chico - N12", "descripcion": "", "fotos": ["https://i.ibb.co/ds2P720D/3a01821d6273.jpg", "https://i.ibb.co/sJKDVP3H/699fbac8c36e.jpg", "https://i.ibb.co/fdHbbGL3/6bc947c35068.jpg", "https://i.ibb.co/rRTChNkN/3f572622baac.jpg", "https://i.ibb.co/CKHKGJLK/f3db033624dd.jpg"], "precioHtml": "<span class=\"precio\">5.500 ARS<\/span>", "precioNumero": 5500.0, "precioTexto": "5.500 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Stapelia%20variegata%20%28c%C3%B3digo%20STAV-N12-01%29", "categorias": ["D", "E"]}]}, {"titulo": "Euphorbia Trigona", "variantes": [{"id": "EUPT-N8-01", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/SwKjNCbn/9563929dc09f.jpg", "https://i.ibb.co/qYhKcsbf/51fd2f6c12e6.jpg", "https://i.ibb.co/ccXbff83/2b1ac0d2fe8a.jpg"], "precioHtml": "<span class=\"precio\">5.000 ARS<\/span>", "precioNumero": 5000.0, "precioTexto": "5.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Euphorbia%20Trigona%20%28c%C3%B3digo%20EUPT-N8-01%29", "categorias": ["D", "E"]}, {"id": "EUPT-N8-02", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/qLVf1spT/b038c14d5119.jpg", "https://i.ibb.co/pv82Bjq4/dd682b7bb1ad.jpg", "https://i.ibb.co/Y7xkrm8X/793aca72bcd8.jpg"], "precioHtml": "<span class=\"precio\">5.000 ARS<\/span>", "precioNumero": 5000.0, "precioTexto": "5.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Euphorbia%20Trigona%20%28c%C3%B3digo%20EUPT-N8-02%29", "categorias": ["D", "E"]}, {"id": "EUPT-N12-01", "tamano": "Chico - N12", "descripcion": "", "fotos": ["https://i.ibb.co/MkMYtNc0/fe69b9f4d059.jpg", "https://i.ibb.co/wZXB4wfD/3114ca95cb6c.jpg", "https://i.ibb.co/7x5D7D8K/0ca0b070fcaa.jpg", "https://i.ibb.co/JWBv0mgM/c934c9eda906.jpg"], "precioHtml": "<span class=\"precio\">6.000 ARS<\/span>", "precioNumero": 6000.0, "precioTexto": "6.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Euphorbia%20Trigona%20%28c%C3%B3digo%20EUPT-N12-01%29", "categorias": ["D", "E"]}]}, {"titulo": "Echeveria Rozen (gibbiflora y lilacina)", "variantes": [{"id": "ECHR-N8-01", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/R4YX12k6/e850dc937929.jpg", "https://i.ibb.co/4RLKgJDj/8a8d1f04418d.jpg", "https://i.ibb.co/RpybX3CX/5c3132f61428.jpg", "https://i.ibb.co/LzkSYLhd/cfff2873a369.jpg"], "precioHtml": "<span class=\"precio\">4.000 ARS<\/span>", "precioNumero": 4000.0, "precioTexto": "4.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Echeveria%20Rozen%20%28gibbiflora%20y%20lilacina%29%20%28c%C3%B3digo%20ECHR-N8-01%29", "categorias": ["E", "F"]}]}, {"titulo": "Echeveria carnicolor", "variantes": [{"id": "ECHC-N8-01", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/fdHpmg8c/1427669d84fe.jpg", "https://i.ibb.co/H8jsvDZ/a56dc52957c8.jpg", "https://i.ibb.co/HfZ9g8x7/449183b366ae.jpg", "https://i.ibb.co/K1bbJHB/6cc92bed3a67.jpg", "https://i.ibb.co/CKqHzBpq/f93cc3d65b12.jpg"], "precioHtml": "<span class=\"precio\">4.000 ARS<\/span>", "precioNumero": 4000.0, "precioTexto": "4.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Echeveria%20carnicolor%20%28c%C3%B3digo%20ECHC-N8-01%29", "categorias": ["E", "F"]}, {"id": "ECHC-N8-02", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/dwkzLxJL/3e45b455111f.jpg", "https://i.ibb.co/nscw6qXt/dc43aa39d3b0.jpg", "https://i.ibb.co/DDGQmN9M/1850143feef9.jpg", "https://i.ibb.co/DgvXSVk4/db7f30a35d17.jpg", "https://i.ibb.co/K1bbJHB/6cc92bed3a67.jpg", "https://i.ibb.co/CKqHzBpq/f93cc3d65b12.jpg"], "precioHtml": "<span class=\"precio\">4.000 ARS<\/span>", "precioNumero": 4000.0, "precioTexto": "4.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Echeveria%20carnicolor%20%28c%C3%B3digo%20ECHC-N8-02%29", "categorias": ["E", "F"]}]}, {"titulo": "Graptopetalum paraguayense", "variantes": [{"id": "GRAPP-N8-01", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/spjW2j9Q/10ac239df530.jpg", "https://i.ibb.co/3yGSX1L6/25a140486fa4.jpg", "https://i.ibb.co/4ZmZ0nCL/796f9fbb2e18.jpg", "https://i.ibb.co/Kx7gZmFH/955920c53398.jpg", "https://i.ibb.co/R49xFf4b/e2ecab19fe6c.jpg"], "precioHtml": "<span class=\"precio\">2.500 ARS<\/span>", "precioNumero": 2500.0, "precioTexto": "2.500 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Graptopetalum%20paraguayense%20%28c%C3%B3digo%20GRAPP-N8-01%29", "categorias": ["D", "E"]}, {"id": "GRAPP-N8-02", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/4Z06Mgw4/d4151341cbaa.jpg", "https://i.ibb.co/pvz1R9RR/e9f54b8a8e9c.jpg", "https://i.ibb.co/nMKx4TSx/1fe7dce67f13.jpg", "https://i.ibb.co/Kx7gZmFH/955920c53398.jpg", "https://i.ibb.co/R49xFf4b/e2ecab19fe6c.jpg"], "precioHtml": "<span class=\"precio\">2.500 ARS<\/span>", "precioNumero": 2500.0, "precioTexto": "2.500 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Graptopetalum%20paraguayense%20%28c%C3%B3digo%20GRAPP-N8-02%29", "categorias": ["D", "E"]}]}, {"titulo": "Mammillaria gracilis", "variantes": [{"id": "MAMG-N8-01", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/r2ZKGtNR/ee34b9b7681b.jpg", "https://i.ibb.co/Ng4BVpGm/54946a92e65c.jpg", "https://i.ibb.co/Kz7QLwLj/7a6efc7c8da1.jpg", "https://i.ibb.co/BV1hRCnt/25568e1fc2cb.jpg"], "precioHtml": "<span class=\"precio\">2.000 ARS<\/span>", "precioNumero": 2000.0, "precioTexto": "2.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Mammillaria%20gracilis%20%28c%C3%B3digo%20MAMG-N8-01%29", "categorias": ["E", "F"]}]}, {"titulo": "Mammillaria prolifera", "variantes": [{"id": "MAMP-N8-01", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/dnJFbPK/a4c057591637.jpg", "https://i.ibb.co/XfNdHd7F/4b8a54101e35.jpg", "https://i.ibb.co/v6w3yJ38/f346fc3578fe.jpg", "https://i.ibb.co/KpK1D7FQ/93b8fe9c0fef.jpg"], "precioHtml": "<span class=\"precio\">2.500 ARS<\/span>", "precioNumero": 2500.0, "precioTexto": "2.500 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Mammillaria%20prolifera%20%28c%C3%B3digo%20MAMP-N8-01%29", "categorias": ["E", "F"]}]}, {"titulo": "Opuntia monacantha f. monstruosa", "variantes": [{"id": "OPMO-N8-01", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/X6PJJGW/9b2f6e080e9f.jpg", "https://i.ibb.co/nq89ZKky/f1d543e8f33a.jpg", "https://i.ibb.co/ch3vYkR2/d50e91af341f.jpg"], "precioHtml": "<span class=\"precio\">2.500 ARS<\/span>", "precioNumero": 2500.0, "precioTexto": "2.500 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Opuntia%20monacantha%20f.%20monstruosa%20%28c%C3%B3digo%20OPMO-N8-01%29", "categorias": ["E", "F"]}]}, {"titulo": "Opuntia microdasys", "variantes": [{"id": "OPMI-N8-01", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/Y49pJ4Q0/2dcbadb3b9e2.jpg", "https://i.ibb.co/S4vCD3cv/c8b6776c5da4.jpg", "https://i.ibb.co/yBN63dS8/ddd9a9f7ac2e.jpg", "https://i.ibb.co/KxXz5CwW/e87d04b0bd16.jpg"], "precioHtml": "<span class=\"precio\">3.000 ARS<\/span>", "precioNumero": 3000.0, "precioTexto": "3.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Opuntia%20microdasys%20%28c%C3%B3digo%20OPMI-N8-01%29", "categorias": ["E", "F"]}]}, {"titulo": "Opuntia elata 'Delgada'", "variantes": [{"id": "OPELD-N8-01", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/dsSwmgd2/c7c8af4801e8.jpg", "https://i.ibb.co/QZFFbxy/dc3d247180ac.jpg", "https://i.ibb.co/JFgJPKWf/600fa98c07ce.jpg"], "precioHtml": "<span class=\"precio\">2.000 ARS<\/span>", "precioNumero": 2000.0, "precioTexto": "2.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Opuntia%20elata%20%27Delgada%27%20%28c%C3%B3digo%20OPELD-N8-01%29", "categorias": ["E", "F"]}]}, {"titulo": "Opuntia elata 'Gruesa'", "variantes": [{"id": "OPELG-N8-01", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/jZLsBND4/245355b729a7.jpg", "https://i.ibb.co/LzJ4gNzb/f939b2ee912e.jpg", "https://i.ibb.co/zhBGXnRb/d4b5bb388a49.jpg", "https://i.ibb.co/60LNPP1L/c8a7005eeb12.jpg", "https://i.ibb.co/vxkhtwPH/2b0392e3f399.jpg", "https://i.ibb.co/Gb44tCQ/99dadd08ed85.jpg"], "precioHtml": "<span class=\"precio\">2.000 ARS<\/span>", "precioNumero": 2000.0, "precioTexto": "2.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Opuntia%20elata%20%27Gruesa%27%20%28c%C3%B3digo%20OPELG-N8-01%29", "categorias": ["E", "F"]}]}, {"titulo": "Austrocylindropuntia subulata", "variantes": [{"id": "AOPS-N8-01", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/fYFPbCsp/8643e4f208df.jpg", "https://i.ibb.co/7dvDZy3J/24c07180e674.jpg", "https://i.ibb.co/Mk0Q8gtQ/fba037f5ebac.jpg"], "precioHtml": "<span class=\"precio\">2.000 ARS<\/span>", "precioNumero": 2000.0, "precioTexto": "2.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Austrocylindropuntia%20subulata%20%28c%C3%B3digo%20AOPS-N8-01%29", "categorias": ["E", "F"]}]}, {"titulo": "Echinopsis aurea var. shaferi", "variantes": [{"id": "ECHA-N8-01", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/84rWKGGy/3946f7869543.jpg", "https://i.ibb.co/21pCn87c/eac63014bb76.jpg", "https://i.ibb.co/0RsLhGvt/2a05045669d0.jpg"], "precioHtml": "<span class=\"precio\">3.000 ARS<\/span>", "precioNumero": 3000.0, "precioTexto": "3.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Echinopsis%20aurea%20var.%20shaferi%20%28c%C3%B3digo%20ECHA-N8-01%29", "categorias": ["E", "F"]}, {"id": "ECHA-N12-01", "tamano": "Chico - N12", "descripcion": "", "fotos": ["https://i.ibb.co/MD3VpNwL/0d801d6b35e7.jpg", "https://i.ibb.co/KpZ6x5px/8c70b37063c9.jpg", "https://i.ibb.co/G3JHjjRQ/2c9955faa2a6.jpg"], "precioHtml": "<span class=\"precio\">4.000 ARS<\/span>", "precioNumero": 4000.0, "precioTexto": "4.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Echinopsis%20aurea%20var.%20shaferi%20%28c%C3%B3digo%20ECHA-N12-01%29", "categorias": ["E", "F"]}]}, {"titulo": "Raphis", "variantes": [{"id": "RAP-5L-01", "tamano": "Medio - 5L - 80cm de alto", "descripcion": "", "fotos": ["https://i.ibb.co/rfLJVVTS/e93a9e867e66.jpg", "https://i.ibb.co/Lh6g4bBt/22b64cda6011.jpg", "https://i.ibb.co/994cQMPc/5018f18e1cee.jpg"], "precioHtml": "<span class=\"precio\">14.000 ARS<\/span>", "precioNumero": 14000.0, "precioTexto": "14.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Raphis%20%28c%C3%B3digo%20RAP-5L-01%29", "categorias": ["B", "C", "D"]}, {"id": "RAP-5L-02", "tamano": "Medio - 5L - 20 cm de alto", "descripcion": "", "fotos": ["https://i.ibb.co/nsCK92zV/08060e25e358.jpg", "https://i.ibb.co/DD9dNvcy/71b84a71acac.jpg"], "precioHtml": "<span class=\"precio\">10.000 ARS<\/span>", "precioNumero": 10000.0, "precioTexto": "10.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Raphis%20%28c%C3%B3digo%20RAP-5L-02%29", "categorias": ["B", "C", "D"]}, {"id": "RAP-5L-03", "tamano": "Medio - 5L - 120cm de alto", "descripcion": "", "fotos": ["https://i.ibb.co/V01ndnGB/b4d9a9c89f87.jpg", "https://i.ibb.co/fzPZt9pG/d7e98efecc3d.jpg", "https://i.ibb.co/gZ2msPqJ/7df6ad6da86f.jpg"], "precioHtml": "<span class=\"precio\">18.000 ARS<\/span>", "precioNumero": 18000.0, "precioTexto": "18.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Raphis%20%28c%C3%B3digo%20RAP-5L-03%29", "categorias": ["B", "C", "D"]}]}, {"titulo": "Cycas revoluta", "variantes": [{"id": "CYC-5L-01", "tamano": "Medio - 5L", "descripcion": "", "fotos": ["https://i.ibb.co/kVYrxY30/220b793df055.jpg", "https://i.ibb.co/NdsDLS8z/8c3376bf5280.jpg", "https://i.ibb.co/ccFz67d0/fb8e85388ce2.jpg", "https://i.ibb.co/6fvNkqn/faf7c65814a1.jpg"], "precioHtml": "<span class=\"precio\">70.000 ARS<\/span>", "precioNumero": 70000.0, "precioTexto": "70.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Cycas%20revoluta%20%28c%C3%B3digo%20CYC-5L-01%29", "categorias": ["D", "E", "F"]}, {"id": "CYC-5L-03", "tamano": "Medio - 5L", "descripcion": "", "fotos": ["https://i.ibb.co/WNzf8Crx/c72b3a4e041d.jpg", "https://i.ibb.co/DHpNRHHH/bc793204aab3.jpg", "https://i.ibb.co/b52wkKMQ/42b7c998ded7.jpg"], "precioHtml": "<span class=\"precio\">70.000 ARS<\/span>", "precioNumero": 70000.0, "precioTexto": "70.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Cycas%20revoluta%20%28c%C3%B3digo%20CYC-5L-03%29", "categorias": ["D", "E", "F"]}, {"id": "CYC-5L-04", "tamano": "Medio - 5L", "descripcion": "", "fotos": ["https://i.ibb.co/5WnVKxB0/f091f7cb6340.jpg", "https://i.ibb.co/bjDgxFbw/1b40a852dc9d.jpg", "https://i.ibb.co/Lhnmp8qw/f61aae336df1.jpg", "https://i.ibb.co/4wJqjWyr/36e99f80cbe8.jpg"], "precioHtml": "<span class=\"precio\">70.000 ARS<\/span>", "precioNumero": 70000.0, "precioTexto": "70.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Cycas%20revoluta%20%28c%C3%B3digo%20CYC-5L-04%29", "categorias": ["D", "E", "F"]}, {"id": "CYC-10L-01", "tamano": "Grande - 10L", "descripcion": "", "fotos": ["https://i.ibb.co/3m5PCjv4/ea7d796c7460.jpg", "https://i.ibb.co/5Wp5ttnt/6c21d464c635.jpg", "https://i.ibb.co/Tx4KtZGr/afc9f362051d.jpg", "https://i.ibb.co/BV6zYtZr/287007de5460.jpg"], "precioHtml": "<span class=\"precio\">70.000 ARS<\/span>", "precioNumero": 70000.0, "precioTexto": "70.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Cycas%20revoluta%20%28c%C3%B3digo%20CYC-10L-01%29", "categorias": ["D", "E", "F"]}]}, {"titulo": "Pitanga / Eugenia uniflora", "variantes": [{"id": "PIT-5L-01", "tamano": "Grande - 5L", "descripcion": "", "fotos": ["https://i.ibb.co/Lzc256km/21da7e2cc799.jpg", "https://i.ibb.co/gbWMW5BD/11a796faa700.jpg", "https://i.ibb.co/KxsZbRnD/f827099d3c27.jpg", "https://i.ibb.co/r2dRyZH9/22d6e4b24550.jpg", "https://i.ibb.co/Z63wHgmH/07cddea93add.jpg", "https://i.ibb.co/ZR5skthW/cd237a5a2b54.jpg"], "precioHtml": "<span class=\"precio\">30.000 ARS<\/span>", "precioNumero": 30000.0, "precioTexto": "30.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Pitanga%20/%20Eugenia%20uniflora%20%28c%C3%B3digo%20PIT-5L-01%29", "categorias": ["E", "F"]}, {"id": "PIT-5L-02", "tamano": "Grande - 5L", "descripcion": "", "fotos": ["https://i.ibb.co/5XbkzyRt/3887bbae7cc1.jpg", "https://i.ibb.co/7x4f7trH/42dcdd5159b5.jpg", "https://i.ibb.co/7dL1hpGm/11cd5dbcaba5.jpg", "https://i.ibb.co/r2dRyZH9/22d6e4b24550.jpg", "https://i.ibb.co/Z63wHgmH/07cddea93add.jpg", "https://i.ibb.co/ZR5skthW/cd237a5a2b54.jpg"], "precioHtml": "<span class=\"precio\">30.000 ARS<\/span>", "precioNumero": 30000.0, "precioTexto": "30.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Pitanga%20/%20Eugenia%20uniflora%20%28c%C3%B3digo%20PIT-5L-02%29", "categorias": ["E", "F"]}]}, {"titulo": "Níspero / Eriobotrya japonica", "variantes": [{"id": "NIS-5L-01", "tamano": "Grande - 5L - x cm", "descripcion": "", "fotos": ["https://i.ibb.co/DfLzX31J/df7138cf86d3.jpg", "https://i.ibb.co/23w7TPF0/c1e9553f5685.jpg", "https://i.ibb.co/9kJV4fV1/a7e435dd425b.jpg", "https://i.ibb.co/bjSzQqnh/0e0e653558f1.jpg", "https://i.ibb.co/5x6GHFzd/f899818c382b.jpg"], "precioHtml": "<span class=\"precio\">10.000 ARS<\/span>", "precioNumero": 10000.0, "precioTexto": "10.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20N%C3%ADspero%20/%20Eriobotrya%20japonica%20%28c%C3%B3digo%20NIS-5L-01%29", "categorias": ["E", "F"]}]}, {"titulo": "Rosa pitiminí / miniatura / rococó rosa", "variantes": [{"id": "ROSR-N14-01", "tamano": "Chico - N14", "descripcion": "", "fotos": ["https://i.ibb.co/WpGdhBD4/73995a66befd.jpg", "https://i.ibb.co/YT7C324v/a1c93a434b8c.jpg", "https://i.ibb.co/ffGC86C/734bf4a87767.jpg", "https://i.ibb.co/99w7qqzX/7fff9cde1bf3.jpg", "https://i.ibb.co/B5L7zNYs/496cf80a373c.jpg"], "precioHtml": "<span class=\"precio\">12.000 ARS<\/span>", "precioNumero": 12000.0, "precioTexto": "12.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Rosa%20pitimin%C3%AD%20/%20miniatura%20/%20rococ%C3%B3%20rosa%20%28c%C3%B3digo%20ROSR-N14-01%29", "categorias": ["E", "F"]}, {"id": "ROSR-5L-01", "tamano": "Medio - 5L", "descripcion": "", "fotos": ["https://i.ibb.co/fzwk4XWM/c5107b75e549.jpg", "https://i.ibb.co/BVQY3293/880f770a9b53.jpg", "https://i.ibb.co/LzFZG2JC/ff0a75551c4b.jpg", "https://i.ibb.co/99w7qqzX/7fff9cde1bf3.jpg", "https://i.ibb.co/B5L7zNYs/496cf80a373c.jpg"], "precioHtml": "<span class=\"precio\">12.000 ARS<\/span>", "precioNumero": 12000.0, "precioTexto": "12.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Rosa%20pitimin%C3%AD%20/%20miniatura%20/%20rococ%C3%B3%20rosa%20%28c%C3%B3digo%20ROSR-5L-01%29", "categorias": ["E", "F"]}]}, {"titulo": "Crassula capitella ‘Campfire’", "variantes": [{"id": "CRAC-N8-01", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/329kQBj/e60e80874ccd.jpg", "https://i.ibb.co/MxHm5KFf/9c578c4dbd3c.jpg", "https://i.ibb.co/vv40JrJx/378c2c462981.jpg", "https://i.ibb.co/nq8M5mkH/0a4507b30242.jpg", "https://i.ibb.co/k6KWPQPy/9824134d80d9.jpg"], "precioHtml": "<span class=\"precio\">3.000 ARS<\/span>", "precioNumero": 3000.0, "precioTexto": "3.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Crassula%20capitella%20%E2%80%98Campfire%E2%80%99%20%28c%C3%B3digo%20CRAC-N8-01%29", "categorias": ["E", "F"]}, {"id": "CRAC-N8-02", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/B2Q1pZVC/578d807a39c7.jpg", "https://i.ibb.co/LDnN8BVx/82369e4b3657.jpg", "https://i.ibb.co/JRPgyjkx/7a5520b0ac57.jpg", "https://i.ibb.co/nq8M5mkH/0a4507b30242.jpg", "https://i.ibb.co/k6KWPQPy/9824134d80d9.jpg"], "precioHtml": "<span class=\"precio\">3.000 ARS<\/span>", "precioNumero": 3000.0, "precioTexto": "3.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Crassula%20capitella%20%E2%80%98Campfire%E2%80%99%20%28c%C3%B3digo%20CRAC-N8-02%29", "categorias": ["E", "F"]}]}, {"titulo": "Crassula ovata / Árbol de jade", "variantes": [{"id": "CRAOV-N8-01", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/Jj3xdGn0/b9cdc547ea5a.jpg", "https://i.ibb.co/QFVdrXWg/dc8f2110dd2d.jpg", "https://i.ibb.co/ZppSzWvY/cc53932cdf42.jpg", "https://i.ibb.co/rfbPYD28/1a847aaa2b41.jpg"], "precioHtml": "<span class=\"precio\">6.000 ARS<\/span>", "precioNumero": 6000.0, "precioTexto": "6.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Crassula%20ovata%20/%20%C3%81rbol%20de%20jade%20%28c%C3%B3digo%20CRAOV-N8-01%29", "categorias": ["D", "E", "F"]}, {"id": "CRAOV-N8-02", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/0R3ywY34/167304b881c8.jpg", "https://i.ibb.co/WvTfK0zk/889220a1b97a.jpg", "https://i.ibb.co/x8CjjVhD/ddc921394cd9.jpg", "https://i.ibb.co/rfbPYD28/1a847aaa2b41.jpg"], "precioHtml": "<span class=\"precio\">5.000 ARS<\/span>", "precioNumero": 5000.0, "precioTexto": "5.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Crassula%20ovata%20/%20%C3%81rbol%20de%20jade%20%28c%C3%B3digo%20CRAOV-N8-02%29", "categorias": ["D", "E", "F"]}, {"id": "CRAOV-N12-02", "tamano": "Chico - N12", "descripcion": "", "fotos": ["https://i.ibb.co/pv1FnZPQ/17f5e801b464.jpg", "https://i.ibb.co/jZ9srvzz/bc2d39cce633.jpg", "https://i.ibb.co/nNf0Kg53/4c4d585d5c4f.jpg", "https://i.ibb.co/Nq08wgn/515e43ba5571.jpg", "https://i.ibb.co/rfbPYD28/1a847aaa2b41.jpg"], "precioHtml": "<span class=\"precio\">10.000 ARS<\/span>", "precioNumero": 10000.0, "precioTexto": "10.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Crassula%20ovata%20/%20%C3%81rbol%20de%20jade%20%28c%C3%B3digo%20CRAOV-N12-02%29", "categorias": ["D", "E", "F"]}]}, {"titulo": "Burrito / Cedrón paraguayo / Aloysia polystachya", "variantes": [{"id": "BUR-N12-01", "tamano": "Chico - N12", "descripcion": "", "fotos": ["https://i.ibb.co/bgdXbstQ/8c086d3742a0.jpg", "https://i.ibb.co/5Wg17Pp3/e676f2c901d2.jpg", "https://i.ibb.co/qLQGVqjf/cd24b67830c3.jpg", "https://i.ibb.co/S457XBHR/e9dd55b66e8e.jpg"], "precioHtml": "<span class=\"precio\">3.000 ARS<\/span>", "precioNumero": 3000.0, "precioTexto": "3.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Burrito%20/%20Cedr%C3%B3n%20paraguayo%20/%20Aloysia%20polystachya%20%28c%C3%B3digo%20BUR-N12-01%29", "categorias": ["E", "F"]}, {"id": "BUR-N12-02", "tamano": "Chico - N12", "descripcion": "", "fotos": ["https://i.ibb.co/5XfhWHHX/e1fdd411771a.jpg", "https://i.ibb.co/TMVq34jS/513c9dbc2d8d.jpg", "https://i.ibb.co/S457XBHR/e9dd55b66e8e.jpg"], "precioHtml": "<span class=\"precio\">3.000 ARS<\/span>", "precioNumero": 3000.0, "precioTexto": "3.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Burrito%20/%20Cedr%C3%B3n%20paraguayo%20/%20Aloysia%20polystachya%20%28c%C3%B3digo%20BUR-N12-02%29", "categorias": ["E", "F"]}, {"id": "BUR-5L-01", "tamano": "Medio - 5L", "descripcion": "", "fotos": ["https://i.ibb.co/8nD0VGb7/ac1b8c783473.jpg", "https://i.ibb.co/DfWx3swz/364f66cbd0cc.jpg", "https://i.ibb.co/S457XBHR/e9dd55b66e8e.jpg"], "precioHtml": "<span class=\"precio\">3.000 ARS<\/span>", "precioNumero": 3000.0, "precioTexto": "3.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Burrito%20/%20Cedr%C3%B3n%20paraguayo%20/%20Aloysia%20polystachya%20%28c%C3%B3digo%20BUR-5L-01%29", "categorias": ["E", "F"]}]}, {"titulo": "Curculigo capitulata / palma de sombra", "variantes": [{"id": "CURC-N18-01", "tamano": "Medio - N18", "descripcion": "", "fotos": ["https://i.ibb.co/Ndbgv0sb/1576a157c99c.jpg", "https://i.ibb.co/DHpL54qF/6dfcc6e393d9.jpg", "https://i.ibb.co/WNFwgk9Q/d17be498aec0.jpg", "https://i.ibb.co/chd21nn5/02e575badb0c.jpg", "https://i.ibb.co/F4Lv3s1T/ddd6d4272a55.jpg"], "precioHtml": "<span class=\"precio\">14.000 ARS<\/span>", "precioNumero": 14000.0, "precioTexto": "14.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Curculigo%20capitulata%20/%20palma%20de%20sombra%20%28c%C3%B3digo%20CURC-N18-01%29", "categorias": ["A", "B", "C"]}]}, {"titulo": "Aeonium haworthii / bejequillo tinerfeño", "variantes": [{"id": "AHAW-N12-01", "tamano": "Chico - N12", "descripcion": "", "fotos": ["https://i.ibb.co/CsVcmQWH/9a2b39288a49.jpg", "https://i.ibb.co/Ngt940CX/12f7a64bab54.jpg", "https://i.ibb.co/bMQcKgNy/4b43b965763e.jpg"], "precioHtml": "<span class=\"precio\">6.000 ARS<\/span>", "precioNumero": 6000.0, "precioTexto": "6.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Aeonium%20haworthii%20/%20bejequillo%20tinerfe%C3%B1o%20%28c%C3%B3digo%20AHAW-N12-01%29", "categorias": ["E", "F"]}, {"id": "AHAW-N12-02", "tamano": "Chico - N12", "descripcion": "", "fotos": ["https://i.ibb.co/Xx4p3LLS/924a6964b13b.jpg", "https://i.ibb.co/KpdtFL3H/6bc3cf4117fd.jpg", "https://i.ibb.co/VcbrCFxb/54ef9994014d.jpg", "https://i.ibb.co/0jJfMPd4/b7f902b2413b.jpg"], "precioHtml": "<span class=\"precio\">8.000 ARS<\/span>", "precioNumero": 8000.0, "precioTexto": "8.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Aeonium%20haworthii%20/%20bejequillo%20tinerfe%C3%B1o%20%28c%C3%B3digo%20AHAW-N12-02%29", "categorias": ["E", "F"]}]}, {"titulo": "Gymnocalycium anisitsii", "variantes": [{"id": "GYMA-N8-01", "tamano": "Mini - N8", "descripcion": "", "fotos": ["https://i.ibb.co/VY3rkvrF/a1b9c541258c.jpg", "https://i.ibb.co/7JkwCQxq/fae086ada996.jpg", "https://i.ibb.co/pvf67BHP/631d0c788c8d.jpg"], "precioHtml": "<span class=\"precio\">2.500 ARS<\/span>", "precioNumero": 2500.0, "precioTexto": "2.500 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Gymnocalycium%20anisitsii%20%28c%C3%B3digo%20GYMA-N8-01%29", "categorias": ["D", "E"]}]}, {"titulo": "Erythrina crista-galli / Ceibo", "variantes": [{"id": "CEI-10L-01", "tamano": "Grande - 10L", "descripcion": "", "fotos": ["https://i.ibb.co/gFjfRJ1X/c6f69abf9afe.jpg", "https://i.ibb.co/5XGzY6dr/3dde47ba1e30.jpg", "https://i.ibb.co/HpFSMwkx/cc62d66735dc.jpg", "https://i.ibb.co/JWs6bmdm/b7d82dc4dae6.jpg", "https://i.ibb.co/DfrXHy51/e2d7ef9b3ade.jpg"], "precioHtml": "<span class=\"precio\">22.000 ARS<\/span>", "precioNumero": 22000.0, "precioTexto": "22.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Erythrina%20crista-galli%20/%20Ceibo%20%28c%C3%B3digo%20CEI-10L-01%29", "categorias": ["F"]}, {"id": "CEI-10L-02", "tamano": "Grande - 10L", "descripcion": "", "fotos": ["https://i.ibb.co/tpZcWRM3/dd95fd97cf08.jpg", "https://i.ibb.co/C3D6DkWm/d7386c56691a.jpg", "https://i.ibb.co/QjNFNrrc/b5169fbc8be8.jpg", "https://i.ibb.co/JWs6bmdm/b7d82dc4dae6.jpg", "https://i.ibb.co/DfrXHy51/e2d7ef9b3ade.jpg"], "precioHtml": "<span class=\"precio\">12.000 ARS<\/span>", "precioNumero": 12000.0, "precioTexto": "12.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Erythrina%20crista-galli%20/%20Ceibo%20%28c%C3%B3digo%20CEI-10L-02%29", "categorias": ["F"]}]}, {"titulo": "Amarilis (Hippeastrum × hybridum 'Clown')", "variantes": [{"id": "HAMA-5L-01", "tamano": "Medio - 5L", "descripcion": "", "fotos": ["https://i.ibb.co/gFfq1V6S/38a35cbdf971.jpg", "https://i.ibb.co/nsSpkMfK/c8b6dc1a18a3.jpg", "https://i.ibb.co/w18j35r/87e9702e33d8.jpg"], "precioHtml": "<span class=\"precio\">5.000 ARS<\/span>", "precioNumero": 5000.0, "precioTexto": "5.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Amarilis%20%28Hippeastrum%20%C3%97%20hybridum%20%27Clown%27%29%20%28c%C3%B3digo%20HAMA-5L-01%29", "categorias": ["C", "D"]}]}, {"titulo": "Manzano", "variantes": [{"id": "MANZ-20L-01", "tamano": "Grande - 20L", "descripcion": "", "fotos": ["https://i.ibb.co/kVzz4w9v/8f8f9dd163eb.jpg", "https://i.ibb.co/kWSf0yf/d869e76c0efe.jpg"], "precioHtml": "<span class=\"precio\">20.000 ARS<\/span>", "precioNumero": 20000.0, "precioTexto": "20.000 ARS", "link": "https://wa.me/5493416971478?text=Hola%21%20Te%20consulto%20por%3A%20Manzano%20%28c%C3%B3digo%20MANZ-20L-01%29", "categorias": ["F"]}]}];
     let modalProducto = null;
+    let modalVarianteIdx = 0;
     let modalFotoIdx = 0;
+    let zoomNivel = 1;
 
     function cambiarFoto(boton, idGaleria, url) {
       document.getElementById('foto-' + idGaleria).src = url;
@@ -406,6 +1219,7 @@
 
     function abrirModal(i) {
       modalProducto = productos[i];
+      modalVarianteIdx = 0;
       modalFotoIdx = 0;
       renderModal();
       document.getElementById('modalOverlay').classList.add('abierto');
@@ -425,47 +1239,101 @@
       cerrarModal(true);
     });
 
+    function variante() {
+      return modalProducto.variantes[modalVarianteIdx];
+    }
+
     function renderModal() {
       if (!modalProducto) return;
-      document.getElementById('modalImg').src = modalProducto.fotos[modalFotoIdx] || '';
+      const v = variante();
+
       document.getElementById('modalTitulo').textContent = modalProducto.titulo;
-      document.getElementById('modalDesc').textContent = modalProducto.descripcion;
-      document.getElementById('modalPrecio').innerHTML = modalProducto.precioHtml;
-      document.getElementById('modalWa').href = modalProducto.link;
+      document.getElementById('modalImg').src = v.fotos[modalFotoIdx] || '';
+      document.getElementById('modalDesc').textContent = v.descripcion;
+      document.getElementById('modalPrecio').innerHTML = v.precioHtml;
+      document.getElementById('modalWa').href = v.link;
 
-      const hayVarias = modalProducto.fotos.length > 1;
-      document.getElementById('modalPrev').style.display = hayVarias ? 'flex' : 'none';
-      document.getElementById('modalNext').style.display = hayVarias ? 'flex' : 'none';
+      const hayVariasFotos = v.fotos.length > 1;
+      document.getElementById('modalPrev').style.display = hayVariasFotos ? 'flex' : 'none';
+      document.getElementById('modalNext').style.display = hayVariasFotos ? 'flex' : 'none';
 
-      const cont = document.getElementById('modalMiniaturas');
-      if (hayVarias) {
-        cont.innerHTML = modalProducto.fotos.map(function(url, idx) {
-          return '<button class="mini" style="background-image:url(\'' + url + '\')" ' +
-                 'onclick="modalFotoIdx=' + idx + '; renderModal();"></button>';
+      const contMini = document.getElementById('modalMiniaturas');
+      contMini.innerHTML = hayVariasFotos ? v.fotos.map(function(url, idx) {
+        return '<button class="mini" style="background-image:url(\'' + url + '\')" ' +
+               'onclick="modalFotoIdx=' + idx + '; renderModal();"></button>';
+      }).join('') : '';
+
+      const contTam = document.getElementById('modalTamanos');
+      if (modalProducto.variantes.length > 1) {
+        contTam.innerHTML = modalProducto.variantes.map(function(vv, idx) {
+          const activo = idx === modalVarianteIdx ? ' activo' : '';
+          const etiqueta = (vv.tamano ? vv.tamano + ' · ' : '') + vv.precioTexto;
+          return '<button class="chip-tamano' + activo + '" onclick="elegirVariante(' + idx + ')">' + etiqueta + '</button>';
         }).join('');
       } else {
-        cont.innerHTML = '';
+        contTam.innerHTML = '';
       }
     }
 
+    function elegirVariante(idx) {
+      modalVarianteIdx = idx;
+      modalFotoIdx = 0;
+      renderModal();
+    }
+
     function modalSiguiente() {
-      modalFotoIdx = (modalFotoIdx + 1) % modalProducto.fotos.length;
+      const v = variante();
+      modalFotoIdx = (modalFotoIdx + 1) % v.fotos.length;
       renderModal();
     }
 
     function modalAnterior() {
-      modalFotoIdx = (modalFotoIdx - 1 + modalProducto.fotos.length) % modalProducto.fotos.length;
+      const v = variante();
+      modalFotoIdx = (modalFotoIdx - 1 + v.fotos.length) % v.fotos.length;
       renderModal();
     }
 
     function abrirImagenCompleta() {
-      document.getElementById('imagenFullImg').src = document.getElementById('modalImg').src;
+      const img = document.getElementById('imagenFullImg');
+      img.src = document.getElementById('modalImg').src;
       document.getElementById('imagenFullOverlay').classList.add('abierta');
+      reiniciarZoom();
     }
 
     function cerrarImagenCompleta() {
       document.getElementById('imagenFullOverlay').classList.remove('abierta');
+      reiniciarZoom();
     }
+
+    function reiniciarZoom() {
+      const img = document.getElementById('imagenFullImg');
+      zoomNivel = 1;
+      img.style.transform = 'scale(1)';
+      img.classList.remove('zoom');
+    }
+
+    function aplicarZoomEn(clientX, clientY) {
+      const img = document.getElementById('imagenFullImg');
+      const rect = img.getBoundingClientRect();
+      const xPct = ((clientX - rect.left) / rect.width) * 100;
+      const yPct = ((clientY - rect.top) / rect.height) * 100;
+      img.style.transformOrigin = xPct + '% ' + yPct + '%';
+      img.style.transform = 'scale(' + zoomNivel + ')';
+      img.classList.toggle('zoom', zoomNivel > 1);
+    }
+
+    document.getElementById('imagenFullImg').addEventListener('click', function(e) {
+      e.stopPropagation();
+      zoomNivel = (zoomNivel > 1) ? 1 : 2.5;
+      aplicarZoomEn(e.clientX, e.clientY);
+    });
+
+    document.getElementById('imagenFullImg').addEventListener('wheel', function(e) {
+      e.preventDefault();
+      zoomNivel += (e.deltaY < 0 ? 0.3 : -0.3);
+      zoomNivel = Math.min(4, Math.max(1, zoomNivel));
+      aplicarZoomEn(e.clientX, e.clientY);
+    }, { passive: false });
 
     document.getElementById('imagenFullOverlay').addEventListener('click', function(e) {
       if (e.target === this) cerrarImagenCompleta();
@@ -487,18 +1355,36 @@
       if (e.key === 'ArrowLeft') modalAnterior();
     });
 
+    // ---------- Filtro de categoría + buscador combinados ----------
+    let filtroActual = 'todas';
+    let textoBusqueda = '';
+
+    function actualizarVisibilidad() {
+      let visibles = 0;
+      document.querySelectorAll('.tarjeta').forEach(function(tarjeta) {
+        const categorias = (tarjeta.getAttribute('data-categorias') || '').split(' ');
+        const coincideFiltro = (filtroActual === 'todas') || categorias.includes(filtroActual);
+        const nombre = tarjeta.getAttribute('data-nombre') || '';
+        const coincideBusqueda = nombre.includes(textoBusqueda);
+        const mostrar = coincideFiltro && coincideBusqueda;
+        tarjeta.classList.toggle('oculta', !mostrar);
+        if (mostrar) visibles++;
+      });
+      document.getElementById('sinResultados').classList.toggle('visible', visibles === 0);
+    }
+
     document.querySelectorAll('.filtro').forEach(function(boton) {
       boton.addEventListener('click', function() {
         document.querySelectorAll('.filtro').forEach(b => b.classList.remove('activo'));
         boton.classList.add('activo');
-        var filtro = boton.getAttribute('data-filtro');
-
-        document.querySelectorAll('.tarjeta').forEach(function(tarjeta) {
-          var categorias = (tarjeta.getAttribute('data-categorias') || '').split(' ');
-          var mostrar = (filtro === 'todas') || categorias.includes(filtro);
-          tarjeta.classList.toggle('oculta', !mostrar);
-        });
+        filtroActual = boton.getAttribute('data-filtro');
+        actualizarVisibilidad();
       });
+    });
+
+    document.getElementById('buscador').addEventListener('input', function() {
+      textoBusqueda = this.value.trim().toLowerCase();
+      actualizarVisibilidad();
     });
   </script>
 </body>
