@@ -162,7 +162,8 @@
   .etiqueta-tallo {
     position: absolute;
     top: -6px;
-    left: 16px;
+    left: 50%;
+    transform: translateX(-50%);
     width: 3px;
     height: 20px;
     background: var(--verde-planta);
@@ -594,6 +595,7 @@
       <option value="precio_asc">Precio: menor a mayor</option>
       <option value="precio_desc">Precio: mayor a menor</option>
       <option value="nuevas">Más nuevas primero</option>
+      <option value="favoritos">❤ Favoritos</option>
     </select>
   </div>
   <p class="contador-resultados" id="contadorResultados"></p>
@@ -1933,9 +1935,10 @@
       if (e.key === 'ArrowLeft') modalAnterior();
     });
 
-    // ---------- Filtro de categoría + buscador combinados ----------
+    // ---------- Filtro de categoría + buscador + favoritos combinados ----------
     let filtroActual = 'todas';
     let textoBusqueda = '';
+    let soloFavoritos = false; // se activa desde el selector de "orden" al elegir "❤ Favoritos"
 
     function actualizarVisibilidad() {
       let visibles = 0;
@@ -1944,13 +1947,22 @@
         const coincideFiltro = (filtroActual === 'todas') || categorias.includes(filtroActual);
         const nombre = tarjeta.getAttribute('data-nombre') || '';
         const coincideBusqueda = nombre.includes(textoBusqueda);
-        const mostrar = coincideFiltro && coincideBusqueda;
+        // ¿esta planta tiene AL MENOS una maceta marcada como favorita?
+        const idxTarjeta = tarjeta.dataset.idx;
+        const coincideFavoritos = !soloFavoritos || Array.from(favoritos).some(function(clave) {
+          return clave.split(':')[0] === idxTarjeta;
+        });
+        const mostrar = coincideFiltro && coincideBusqueda && coincideFavoritos;
         tarjeta.classList.toggle('oculta', !mostrar);
         if (mostrar) visibles++;
       });
       document.getElementById('sinResultados').classList.toggle('visible', visibles === 0);
       const contador = document.getElementById('contadorResultados');
-      contador.textContent = visibles === 1 ? '1 planta encontrada' : visibles + ' plantas encontradas';
+      if (soloFavoritos && visibles === 0) {
+        contador.textContent = 'Todavía no marcaste ninguna planta como favorita';
+      } else {
+        contador.textContent = visibles === 1 ? '1 planta encontrada' : visibles + ' plantas encontradas';
+      }
     }
 
     document.querySelectorAll('.filtro').forEach(function(boton) {
@@ -1972,14 +1984,19 @@
       }, 200);
     });
 
-    // ---------- Orden (recomendado / precio / más nuevas) ----------
+    // ---------- Orden (recomendado / precio / más nuevas / favoritos) ----------
     // "Más nuevas primero" asume que las plantas se van agregando al
     // FINAL del Excel maestro con el correr del tiempo: usa el orden
     // original (data-idx) invertido. Si en algún momento insertás filas
     // nuevas en el medio del Excel en vez de al final, este orden deja
     // de ser exacto (es una aproximación, no una fecha real).
-    document.getElementById('orden').addEventListener('change', function() {
-      const criterio = this.value;
+    // "❤ Favoritos" no reordena: filtra la grilla para mostrar solo las
+    // plantas con alguna maceta marcada (ver soloFavoritos arriba).
+    function aplicarOrdenSeleccionado() {
+      const criterio = document.getElementById('orden').value;
+      soloFavoritos = (criterio === 'favoritos');
+      actualizarVisibilidad();
+
       const main = document.querySelector('main');
       const sinResultados = document.getElementById('sinResultados');
       const tarjetas = Array.from(main.querySelectorAll('.tarjeta'));
@@ -1995,10 +2012,12 @@
         if (criterio === 'nuevas') {
           return idxB - idxA;
         }
-        return idxA - idxB; // recomendado = orden original del Excel
+        return idxA - idxB; // recomendado / favoritos: orden original del Excel
       });
       tarjetas.forEach(function(t) { main.insertBefore(t, sinResultados); });
-    });
+    }
+
+    document.getElementById('orden').addEventListener('change', aplicarOrdenSeleccionado);
 
     // ---------- Favoritos (lista de interés) ----------
     const NUMERO_WA_JS = "5493416971478";
@@ -2028,6 +2047,7 @@
       guardarFavoritos();
       sincronizarUIFavoritos();
       actualizarBarraFavoritos();
+      if (soloFavoritos) actualizarVisibilidad(); // por si estás viendo el filtro "❤ Favoritos"
     }
 
     function alternarFavoritoModalActual() {
@@ -2051,6 +2071,7 @@
       guardarFavoritos();
       sincronizarUIFavoritos();
       actualizarBarraFavoritos();
+      if (soloFavoritos) actualizarVisibilidad();
     }
 
     function consultarFavoritos() {
