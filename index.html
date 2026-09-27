@@ -1660,6 +1660,20 @@
     const NOMBRE_NEGOCIO_JS = "Persefoneplantas";
     const PLACEHOLDER_SIN_FOTO_JS = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAyMDAgMjAwJz48cmVjdCB3aWR0aD0nMjAwJyBoZWlnaHQ9JzIwMCcgZmlsbD0nI0VERUFFMCcvPjxnIGZpbGw9J25vbmUnIHN0cm9rZT0nI0I5QjM5Qycgc3Ryb2tlLXdpZHRoPSczJz48cGF0aCBkPSdNNjAgMTUwIEM2MCAxMTAgODUgOTAgMTAwIDY1IEMxMDggOTAgMTAwIDEyNSA2MCAxNTBaJy8+PHBhdGggZD0nTTE0MCAxNTAgQzE0MCAxMTAgMTE1IDkwIDEwMCA2NScvPjwvZz48dGV4dCB4PScxMDAnIHk9JzE3NicgZm9udC1mYW1pbHk9J0FyaWFsLCBzYW5zLXNlcmlmJyBmb250LXNpemU9JzEzJyBmaWxsPScjOGI4NzcwJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJz5TaW4gZm90bzwvdGV4dD48L3N2Zz4=";
 
+    // Mapa de id EXACTO (ej: "asp-n18-01") -> a qué producto/maceta
+    // corresponde. Sirve para que buscar por el código de una maceta
+    // puntual abra DIRECTO esa maceta, en vez de solo mostrar la
+    // tarjeta y dejar que el usuario tenga que tocar "Ver tamaños" y
+    // elegirla a mano.
+    const mapaIdsExactos = {};
+    productos.forEach(function(producto, pIdx) {
+      producto.variantes.forEach(function(v, vIdx) {
+        if (v.id) {
+          mapaIdsExactos[v.id.toLowerCase()] = { producto: pIdx, variante: vIdx };
+        }
+      });
+    });
+
     // imgbb a veces tarda un rato (hasta uno o dos minutos) en que una
     // foto recién subida esté disponible en todos sus servidores: en
     // ese lapso puede devolver "Image not found" aunque la foto SÍ
@@ -1959,6 +1973,33 @@
       if (e.target === this) cerrarImagenCompleta();
     });
 
+    // ---------- Deslizar con el dedo para cambiar de foto (celu) ----------
+    (function habilitarSwipeModal() {
+      const contenedor = document.querySelector('.modal-foto-grande');
+      if (!contenedor) return;
+      let inicioX = 0;
+      let inicioY = 0;
+
+      contenedor.addEventListener('touchstart', function(e) {
+        if (e.touches.length !== 1) return;
+        inicioX = e.touches[0].clientX;
+        inicioY = e.touches[0].clientY;
+      }, { passive: true });
+
+      contenedor.addEventListener('touchend', function(e) {
+        if (!e.changedTouches || e.changedTouches.length !== 1) return;
+        const dx = e.changedTouches[0].clientX - inicioX;
+        const dy = e.changedTouches[0].clientY - inicioY;
+        const UMBRAL = 40; // píxeles mínimos para considerarlo un swipe, no un toque
+        // Solo cuenta si el movimiento es sobre todo HORIZONTAL -si es
+        // más vertical, probablemente el usuario está scrolleando la
+        // info de abajo, no cambiando de foto-.
+        if (Math.abs(dx) > UMBRAL && Math.abs(dx) > Math.abs(dy) * 1.5) {
+          if (dx < 0) { modalSiguiente(); } else { modalAnterior(); }
+        }
+      }, { passive: true });
+    })();
+
     document.getElementById('modalOverlay').addEventListener('click', function(e) {
       if (e.target === this) cerrarModal();
     });
@@ -2068,6 +2109,13 @@
       debounceBusqueda = setTimeout(function() {
         textoBusqueda = valor.trim().toLowerCase();
         actualizarVisibilidad();
+
+        // ¿el texto es el id EXACTO de una maceta puntual? Si es así,
+        // abrimos directo esa maceta (no solo la tarjeta general).
+        const coincidencia = mapaIdsExactos[textoBusqueda];
+        if (coincidencia) {
+          abrirModal(coincidencia.producto, coincidencia.variante);
+        }
       }, 200);
     });
 
