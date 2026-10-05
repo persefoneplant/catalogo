@@ -1875,7 +1875,26 @@
 
       const contTam = document.getElementById('modalTamanos');
       if (modalProducto.variantes.length > 1) {
-        contTam.innerHTML = modalProducto.variantes.map(function(vv, idx) {
+        // Mostramos los chips ordenados por precio (más baratas primero),
+        // pero OJO: 'idx' sigue siendo la posición ORIGINAL de cada
+        // variante dentro de modalProducto.variantes -no la cambiamos-,
+        // porque esa posición es la misma que usan los favoritos
+        // guardados (clave "productoIdx:varianteIdx") y los links
+        // compartidos. Si reordenáramos el array en sí, un favorito
+        // guardado de antes podría terminar apuntando a otra maceta.
+        const ordenPorPrecio = modalProducto.variantes
+          .map(function(vv, idx) { return idx; })
+          .sort(function(idxA, idxB) {
+            const pa = modalProducto.variantes[idxA].precioNumero;
+            const pb = modalProducto.variantes[idxB].precioNumero;
+            if (pa == null && pb == null) return idxA - idxB;
+            if (pa == null) return 1;  // sin precio numérico: al final
+            if (pb == null) return -1;
+            return pa - pb;
+          });
+
+        contTam.innerHTML = ordenPorPrecio.map(function(idx) {
+          const vv = modalProducto.variantes[idx];
           const activo = idx === modalVarianteIdx ? ' activo' : '';
           const agotado = vv.disponible ? '' : ' agotado';
           const etiqueta = (vv.tamano ? vv.tamano + ' · ' : '') + vv.precioTexto + (vv.disponible ? '' : ' (agotado)');
