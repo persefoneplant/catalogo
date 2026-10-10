@@ -500,50 +500,84 @@
     flex-wrap: wrap;
     margin-bottom: 14px;
   }
-  .modal-tamanos {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+  /* ---------- Selector desplegable de maceta/tamaño ---------- */
+  .selector-tamano {
+    position: relative;
     margin-bottom: 16px;
   }
-  .chip-tamano {
-    display: inline-flex;
+  .selector-tamano-boton {
+    width: 100%;
+    display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 10px;
     font-family: 'Inter', sans-serif;
-    font-size: 0.82rem;
+    font-size: 0.9rem;
     font-weight: 600;
-    padding: 7px 10px 7px 14px;
-    border-radius: 20px;
+    padding: 11px 14px;
+    border-radius: 8px;
     border: 1.5px solid #c9c2a8;
     background: white;
     color: var(--texto-tarjeta);
+    cursor: pointer;
+    text-align: left;
   }
-  .chip-tamano-label { cursor: pointer; }
+  .selector-tamano-boton:hover,
+  .selector-tamano.abierto .selector-tamano-boton { border-color: var(--verde-precio); }
+  .selector-tamano-boton.agotado { color: #7a2e2e; border-color: #7a2e2e; }
+  .selector-tamano-texto { flex: 1; }
+  .selector-tamano-cuenta {
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: #8a8672;
+    white-space: nowrap;
+  }
+  .selector-tamano-flecha { transition: transform 0.15s ease; font-size: 0.8rem; }
+  .selector-tamano.abierto .selector-tamano-flecha { transform: rotate(180deg); }
+  .selector-tamano-lista {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 6px);
+    background: white;
+    border: 1.5px solid #c9c2a8;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.28);
+    z-index: 20;
+    max-height: min(46vh, 340px);
+    overflow-y: auto;
+  }
+  .selector-tamano.abierto .selector-tamano-lista { display: block; }
+  .opcion-tamano {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 6px 4px 14px;
+    border-bottom: 1px solid #eee8d4;
+    cursor: pointer;
+    color: var(--texto-tarjeta);
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+  .opcion-tamano:last-child { border-bottom: none; }
+  .opcion-tamano:hover { background: #f6f2e4; }
+  .opcion-tamano-label { flex: 1; padding: 9px 0; }
+  .opcion-tamano.agotado .opcion-tamano-label { opacity: 0.55; }
+  .opcion-tamano.activo { background: var(--verde-precio); color: white; }
+  .opcion-tamano.activo.agotado { background: #7a2e2e; }
   .chip-fav {
     border: none;
     background: transparent;
     color: inherit;
     opacity: 0.5;
     cursor: pointer;
-    font-size: 0.92rem;
+    font-size: 1rem;
     line-height: 1;
-    padding: 2px;
+    padding: 9px 10px;
   }
   .chip-fav:hover { opacity: 0.8; }
   .chip-fav.activo { opacity: 1; color: var(--terracota); }
-  .chip-tamano.activo {
-    background: var(--verde-precio);
-    border-color: var(--verde-precio);
-    color: white;
-  }
-  .chip-tamano.agotado {
-    opacity: 0.55;
-  }
-  .chip-tamano.agotado.activo {
-    background: #7a2e2e;
-    border-color: #7a2e2e;
-  }
   .modal-desc {
     white-space: pre-line;
     font-size: 0.92rem;
@@ -1800,7 +1834,15 @@
           <h2 id="modalTitulo"></h2>
           <button class="fav-btn-modal" id="modalFavBtn" type="button" onclick="alternarFavoritoModalActual()" aria-label="Marcar como favorita">♥</button>
         </div>
-        <div class="modal-tamanos" id="modalTamanos"></div>
+        <div class="selector-tamano" id="modalTamanos" style="display:none">
+          <button class="selector-tamano-boton" id="selectorTamanoBoton" type="button"
+                  aria-haspopup="listbox" aria-expanded="false" onclick="alternarListaTamanos()">
+            <span class="selector-tamano-texto" id="selectorTamanoTexto"></span>
+            <span class="selector-tamano-cuenta" id="selectorTamanoCuenta"></span>
+            <span class="selector-tamano-flecha">▾</span>
+          </button>
+          <div class="selector-tamano-lista" id="selectorTamanoLista" role="listbox"></div>
+        </div>
         <div class="modal-miniaturas" id="modalMiniaturas"></div>
         <p class="modal-desc" id="modalDesc"></p>
         <div class="modal-precio" id="modalPrecio"></div>
@@ -1896,6 +1938,7 @@
       modalVarianteIdx = (typeof varianteInicial === 'number' && modalProducto.variantes[varianteInicial])
         ? varianteInicial : 0;
       modalFotoIdx = 0;
+      cerrarListaTamanos();
       renderModal();
       precargarMiniaturasDeVariantes(modalProducto);
       document.getElementById('modalOverlay').classList.add('abierto');
@@ -1957,6 +2000,7 @@
     }
 
     function cerrarModal(desdeHistorial) {
+      cerrarListaTamanos();
       document.getElementById('modalOverlay').classList.remove('abierto');
       document.body.style.overflow = '';
       modalToken++; // descarta cualquier carga de foto grande pendiente
@@ -2043,9 +2087,14 @@
                'onload="imgCargada(this)" onerror="imgError(this)"></button>';
       }).join('') : '';
 
+      // Selector desplegable de maceta/tamaño: un solo botón que muestra
+      // la maceta elegida, y una lista (oculta hasta que se toca) con
+      // todas las opciones. Así 15 tamaños no ocupan 15 lugares de pantalla.
       const contTam = document.getElementById('modalTamanos');
       if (modalProducto.variantes.length > 1) {
-        // Mostramos los chips ordenados por precio (más baratas primero),
+        contTam.style.display = '';
+
+        // La lista se muestra ordenada por precio (más baratas primero),
         // pero OJO: 'idx' sigue siendo la posición ORIGINAL de cada
         // variante dentro de modalProducto.variantes -no la cambiamos-,
         // porque esa posición es la misma que usan los favoritos
@@ -2063,21 +2112,30 @@
             return pa - pb;
           });
 
-        contTam.innerHTML = ordenPorPrecio.map(function(idx) {
+        document.getElementById('selectorTamanoTexto').textContent = etiquetaTamano(v);
+        document.getElementById('selectorTamanoCuenta').textContent = modalProducto.variantes.length + ' opciones';
+        document.getElementById('selectorTamanoBoton').classList.toggle('agotado', !v.disponible);
+
+        const lista = document.getElementById('selectorTamanoLista');
+        const scrollPrevio = lista.scrollTop; // si la lista estaba abierta, no la mandamos al principio
+        lista.innerHTML = ordenPorPrecio.map(function(idx) {
           const vv = modalProducto.variantes[idx];
-          const activo = idx === modalVarianteIdx ? ' activo' : '';
+          const esActiva = idx === modalVarianteIdx;
+          const activo = esActiva ? ' activo' : '';
           const agotado = vv.disponible ? '' : ' agotado';
-          const etiqueta = (vv.tamano ? vv.tamano + ' · ' : '') + vv.precioTexto + (vv.disponible ? '' : ' (agotado)');
           const clave = modalProductoIdx + ':' + idx;
           const favActivo = favoritos.has(clave) ? ' activo' : '';
-          return '<div class="chip-tamano' + activo + agotado + '">' +
-                 '<span class="chip-tamano-label" onclick="elegirVariante(' + idx + ')">' + etiqueta + '</span>' +
+          return '<div class="opcion-tamano' + activo + agotado + '" role="option" aria-selected="' + esActiva + '" ' +
+                 'onclick="elegirVariante(' + idx + ')">' +
+                 '<span class="opcion-tamano-label">' + etiquetaTamano(vv) + '</span>' +
                  '<button class="chip-fav' + favActivo + '" type="button" data-fav-key="' + clave + '" ' +
                  'onclick="event.stopPropagation(); alternarFavorito(\'' + clave + '\')" aria-label="Favorita">♥</button>' +
                  '</div>';
         }).join('');
+        lista.scrollTop = scrollPrevio;
       } else {
-        contTam.innerHTML = '';
+        contTam.style.display = 'none';
+        cerrarListaTamanos();
       }
 
       // Corazón grande del modal: refleja/controla el favorito de la
@@ -2089,11 +2147,56 @@
     }
 
     function elegirVariante(idx) {
+      cerrarListaTamanos();
       modalVarianteIdx = idx;
       modalFotoIdx = 0;
       renderModal();
       actualizarUrlModal();
     }
+
+    function etiquetaTamano(vv) {
+      return (vv.tamano ? vv.tamano + ' · ' : '') + vv.precioTexto + (vv.disponible ? '' : ' (agotado)');
+    }
+
+    function listaTamanosAbierta() {
+      return document.getElementById('modalTamanos').classList.contains('abierto');
+    }
+
+    function cerrarListaTamanos() {
+      document.getElementById('modalTamanos').classList.remove('abierto');
+      document.getElementById('selectorTamanoBoton').setAttribute('aria-expanded', 'false');
+    }
+
+    function alternarListaTamanos() {
+      if (listaTamanosAbierta()) {
+        cerrarListaTamanos();
+        return;
+      }
+      document.getElementById('modalTamanos').classList.add('abierto');
+      document.getElementById('selectorTamanoBoton').setAttribute('aria-expanded', 'true');
+
+      const lista = document.getElementById('selectorTamanoLista');
+      // Con muchas opciones, que la lista arranque centrada en la maceta
+      // que se está viendo (y no siempre desde arriba).
+      const activa = lista.querySelector('.opcion-tamano.activo');
+      if (activa) {
+        lista.scrollTop = activa.offsetTop - (lista.clientHeight - activa.clientHeight) / 2;
+      }
+      // En el celu la lista podría quedar parcialmente fuera de pantalla:
+      // pedimos que se deslice lo mínimo necesario para verla entera.
+      if (lista.scrollIntoView) {
+        lista.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }
+
+    // Tocar en cualquier otro lado cierra la lista (lo que se toque
+    // adentro -una opción o un corazoncito- se maneja por su cuenta).
+    document.addEventListener('click', function(e) {
+      const cont = document.getElementById('modalTamanos');
+      if (cont && cont.classList.contains('abierto') && !cont.contains(e.target)) {
+        cerrarListaTamanos();
+      }
+    });
 
     function modalSiguiente() {
       const v = variante();
@@ -2244,7 +2347,11 @@
         return;
       }
       if (!document.getElementById('modalOverlay').classList.contains('abierto')) return;
-      if (e.key === 'Escape') cerrarModal();
+      if (e.key === 'Escape') {
+        // Si la lista de tamaños está abierta, el primer Escape cierra
+        // solo esa lista; recién el siguiente cierra el modal.
+        if (listaTamanosAbierta()) { cerrarListaTamanos(); } else { cerrarModal(); }
+      }
       if (e.key === 'ArrowRight') modalSiguiente();
       if (e.key === 'ArrowLeft') modalAnterior();
     });
